@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Rush: Space to Advance - SpeedType Pro</title>
+    <meta name="description" content="Improve typing accuracy and speed with Word Rush: Space to Advance. Type words one by one, press space to advance, and get instant feedback.">
+    <meta name="keywords" content="typing game, word typing, space to advance, typing practice, accuracy, speed typing, online game, word rush">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles - Consistent with previous apps */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin: 0;
+            color: #1f2937; /* Default text color */
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Main Container - Consistent with previous apps */
+        .container {
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            padding: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+        }
+        .container:hover {
+            transform: scale(1.005);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* hover:shadow-2xl */
+        }
+
+        /* Heading - Consistent with previous apps */
+        .title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            text-align: center;
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em; /* tracking-tight */
+        }
+        .title-gradient {
+            background-image: linear-gradient(to right, #2563eb, #9333ea); /* from-blue-600 to-purple-600 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback */
+        }
+
+        /* Game Area */
+        .game-area {
+            background-color: #f9fafb; /* bg-gray-50 */
+            padding: 2rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            margin-bottom: 1.5rem;
+            min-height: 10rem; /* Sufficient height for word display */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #wordDisplay {
+            font-size: 3rem; /* Large font for current word */
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            min-height: 3.5rem; /* Ensure space even for short words */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #374151; /* Default word color */
+            transition: color 0.1s ease-in-out;
+        }
+
+        .char-correct {
+            color: #16a34a; /* Green for correctly typed characters */
+        }
+        .char-incorrect {
+            color: #dc2626; /* Red for incorrectly typed characters */
+        }
+
+        #typingInput {
+            width: 80%; /* Adjust width as needed */
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 2px solid #2563eb; /* Blue border */
+            border-radius: 0.5rem;
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            background-color: #fff;
+            color: #1f2937;
+        }
+        #typingInput:focus {
+            border-color: #9333ea; /* Purple on focus */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        #typingInput.error-state {
+            border-color: #dc2626; /* Red border on error */
+            box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+        }
+
+        /* Score Display */
+        #scoreDisplay {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-top: 1rem;
+        }
+
+        /* Game Over Overlay */
+        #gameOverOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            z-index: 20;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        #gameOverOverlay h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        #gameOverOverlay p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #eee;
+        }
+        #gameOverOverlay button {
+            padding: 0.8rem 2rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        #gameOverOverlay button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.4);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .control-button {
+            padding: 0.8rem 2rem;
+            background-image: linear-gradient(to right, #2563eb, #9333ea);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .control-button:hover {
+            box-shadow: 0 8px 10px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* AdSense Placeholder - Consistent with previous apps */
+        .adsense-placeholder {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            color: #4b5563; /* text-gray-600 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="title-gradient">Word Rush: Space to Advance!</span>
+        </h1>
+
+        <div class="game-area">
+            <div id="wordDisplay">Click "Start Game"</div>
+            <input type="text" id="typingInput" autofocus disabled>
+            <div id="scoreDisplay">Score: 0</div>
+
+            <div id="gameOverOverlay" class="hidden">
+                <h2 id="gameOverResultText"></h2>
+                <p id="gameOverStatsText"></p>
+                <button id="restartGameButton">Play Again</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startGameButton" class="control-button">Start Game</button>
+            <button id="resetGameButton" class="control-button">Reset Game</button>
+            <button id="backToHomeButton" class="control-button">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Google AdSense Placeholder - Consistent with previous apps -->
+    <div class="adsense-placeholder">
+        <!--
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_AD_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.onload || []).push({});
+          </script>
+        -->
+        <p>Advertisement Area (Integrate Google AdSense or other ad platforms here)</p>
+    </div>
+
+    <script>
+        // --- Manual Content Data (extracted words from previous paragraphs/sentences) ---
+        const TYPING_WORDS_POOL = [
+            "ancient", "branches", "stories", "traveler", "peace", "bustling", "cafe", "coffee", "books", "solace",
+            "laughter", "ocean", "mysteries", "colorful", "coral", "creatures", "message", "unknown", "hopes", "dreams",
+            "scientist", "worked", "complex", "knowledge", "universe", "experiment", "discovery", "understanding", "lighthouse", "sentinel",
+            "harbor", "beacon", "treacherous", "endurance", "purpose", "digital", "realm", "evolving", "technologies", "innovations",
+            "limitless", "navigating", "intricate", "adaptability", "embrace", "continuous", "forest", "sunlight", "dappled", "mossy",
+            "pathways", "crisp", "scent", "pine", "earth", "chorus", "symphony", "nature", "soothed", "soul",
+            "cooking", "creativity", "precision", "ingredient", "flavor", "texture", "transformation", "delightful", "sensory", "experience",
+            "exploring", "cultures", "perspective", "language", "customs", "traditions", "history", "unique", "immersing", "fosters",
+            "broadens", "horizons", "tapestry", "stars", "planets", "galaxies", "astronomers", "celestial", "phenomena", "unraveling",
+            "cosmic", "captivated", "humanity", "millennia", "bookstore", "paper", "forgotten", "tales", "danced", "windows",
+            "illuminating", "rows", "literary", "treasures", "spine", "different", "world", "waiting", "discovered", "curious",
+            "reader", "gentle", "rain", "rooftop", "transformed", "watercolor", "cool", "fresh", "perfect", "moment",
+            "quiet", "reflection", "window", "mountains", "majestic", "peaks", "shrouded", "mist", "golden", "light",
+            "revealing", "rugged", "beauty", "landscape", "inspired", "timelessness", "innovation", "springs", "unexpected", "places",
+            "simple", "nurtured", "persistence", "blossom", "revolutionary", "journey", "concept", "reality", "filled", "challenges",
+            "potential", "impact", "worthwhile", "whispered", "secrets", "rustling", "leaves", "trees", "centuries", "cathedral",
+            "roots", "intertwined", "beneath", "wildlife", "silently", "undergrowth", "vibrant", "ecosystem", "thriving", "harmony",
+            "evening", "city", "lights", "twinkle", "glow", "represented", "dream", "unfolding", "vantage", "urban",
+            "sprawl", "glittering", "constellation", "ground", "storytelling", "central", "human", "culture", "myths", "novels", "narratives",
+            "connect", "teach", "entertain", "transport", "listeners", "sparking", "imagination", "skill", "patience", "dedication",
+            "frustration", "doubt", "consistent", "practice", "leads", "gradual", "improvement", "satisfaction", "mastering", "motivates",
+            "continued", "effort", "river", "flowed", "calmly", "towards", "reflecting", "changing", "colors", "banks",
+            "diverse", "flora", "fauna", "sustained", "life-giving", "waters", "constant", "mirroring", "passage", "cycles",
+            "independent", "coffee", "shop", "community", "locals", "gathered", "daily", "sharing", "news", "ideas",
+            "favorite", "brews", "place", "warm", "connections", "forged"
+        ];
+
+        // --- Game State Variables ---
+        let currentWord = ''; // The word currently displayed for typing
+        let typedInputForCurrentWord = ''; // What the user has typed for the current word
+        let score = 0;
+        let gameStarted = false;
+        let gameOver = false;
+        let wordPoolIndex = 0; // To cycle through the word pool
+
+        // --- DOM Elements ---
+        const wordDisplay = document.getElementById('wordDisplay');
+        const typingInput = document.getElementById('typingInput');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const startGameButton = document.getElementById('startGameButton');
+        const resetGameButton = document.getElementById('resetGameButton');
+        const backToHomeButton = document.getElementById('backToHomeButton');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const gameOverResultText = document.getElementById('gameOverResultText');
+        const gameOverStatsText = document.getElementById('gameOverStatsText');
+        const restartGameButton = document.getElementById('restartGameButton');
+
+        // --- Game Initialization ---
+        function initGame() {
+            score = 0;
+            gameStarted = false;
+            gameOver = false;
+            wordPoolIndex = 0; // Reset word pool index
+            
+            // Shuffle the word pool at the start of a new game
+            shuffleArray(TYPING_WORDS_POOL);
+
+            typingInput.value = '';
+            typingInput.disabled = true;
+            typingInput.classList.remove('error-state');
+            typingInput.placeholder = "Type words here...";
+
+            gameOverOverlay.classList.add('hidden'); // Hide game over overlay
+
+            updateScoreDisplay();
+            displayNextWord(); // Display the first word
+        }
+
+        // --- Utility to shuffle an array (Fisher-Yates) ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // --- Display Next Word ---
+        function displayNextWord() {
+            if (wordPoolIndex >= TYPING_WORDS_POOL.length) {
+                // All words typed, end game or loop
+                endGame(true); // Indicate successful completion
+                return;
+            }
+            currentWord = TYPING_WORDS_POOL[wordPoolIndex];
+            typedInputForCurrentWord = '';
+            renderWordDisplay();
+            typingInput.value = ''; // Clear input for the new word
+            typingInput.classList.remove('error-state'); // Clear error state
+            typingInput.focus();
+        }
+
+        // --- Render Current Word with Feedback ---
+        function renderWordDisplay() {
+            let html = '';
+            for (let i = 0; i < currentWord.length; i++) {
+                const char = currentWord[i];
+                let charClass = '';
+
+                if (i < typedInputForCurrentWord.length) {
+                    charClass = (char === typedInputForCurrentWord[i]) ? 'char-correct' : 'char-incorrect';
+                }
+                html += `<span class="${charClass}">${char}</span>`;
+            }
+            wordDisplay.innerHTML = html;
+        }
+
+        // --- Typing Input Handling ---
+        function handleTypingInput(event) {
+            if (gameOver || !gameStarted) {
+                event.preventDefault();
+                return;
+            }
+
+            const inputValue = event.target.value;
+
+            // Check for spacebar press to advance word
+            if (event.inputType === 'insertText' && event.data === ' ') {
+                event.preventDefault(); // Prevent adding space to input
+
+                if (typedInputForCurrentWord === currentWord) {
+                    // Word is correct, advance to next
+                    score++;
+                    wordPoolIndex++;
+                    updateScoreDisplay();
+                    displayNextWord();
+                } else {
+                    // Word is incorrect, flash error
+                    typingInput.classList.add('error-state');
+                    // Optionally, clear input or keep it for correction
+                    // typingInput.value = typedInputForCurrentWord; // Keep incorrect input
+                }
+                return; // Handled spacebar, exit
+            }
+
+            // Update typed characters for current word
+            typedInputForCurrentWord = inputValue;
+
+            // Check for correctness and apply error state
+            if (currentWord.startsWith(typedInputForCurrentWord)) {
+                typingInput.classList.remove('error-state');
+            } else {
+                typingInput.classList.add('error-state');
+            }
+
+            renderWordDisplay(); // Update visual feedback
+        }
+
+        // --- Update Score Display ---
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+
+        // --- End Game ---
+        function endGame(completedAllWords = false) {
+            gameOver = true;
+            gameStarted = false;
+            typingInput.disabled = true;
+
+            gameOverOverlay.classList.remove('hidden');
+            if (completedAllWords) {
+                gameOverResultText.textContent = `Congratulations!`;
+                gameOverStatsText.innerHTML = `You completed all words!<br>Final Score: ${score}`;
+            } else {
+                gameOverResultText.textContent = `Game Over!`;
+                gameOverStatsText.innerHTML = `Final Score: ${score}<br>Words Typed: ${score}`;
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame(); // Initialize game immediately on DOM load
+
+            // Ensure input stays focused
+            typingInput.addEventListener('blur', () => {
+                if (!gameOver && gameStarted) {
+                    typingInput.focus();
+                }
+            });
+
+            typingInput.addEventListener('input', handleTypingInput);
+            typingInput.addEventListener('keydown', (event) => {
+                // Prevent default behavior for spacebar to avoid page scrolling
+                // This is crucial for the "space to advance" mechanic
+                if (event.key === ' ') {
+                    event.preventDefault();
+                }
+            });
+
+            startGameButton.addEventListener('click', () => {
+                if (!gameStarted && !gameOver) {
+                    gameStarted = true;
+                    typingInput.disabled = false;
+                    typingInput.focus();
+                    displayNextWord(); // Display the first word to start
+                }
+            });
+
+            resetGameButton.addEventListener('click', initGame);
+            restartGameButton.addEventListener('click', initGame); // For game over overlay button
+
+            backToHomeButton.addEventListener('click', () => {
+                // Navigate back to the landing page
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

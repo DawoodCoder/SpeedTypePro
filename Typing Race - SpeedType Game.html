@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Race - SpeedType Game</title>
+    <meta name="description" content="Race against AI opponents by typing fast and accurately in this 2D typing racing game with high-quality car and road visuals. Improve your WPM while having fun!">
+    <meta name="keywords" content="typing game, typing race, 2d game, speed typing, wpm game, online game, keyboard game, high quality, racing, cars">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles - Consistent with previous apps */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin: 0;
+            color: #1f2937; /* Default text color */
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Main Container - Consistent with previous apps */
+        .container {
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            padding: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+            position: relative; /* For absolute positioning of game elements */
+        }
+        .container:hover {
+            transform: scale(1.005);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* hover:shadow-2xl */
+        }
+
+        /* Heading - Consistent with previous apps */
+        .title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            text-align: center;
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em; /* tracking-tight */
+        }
+        .title-gradient {
+            background-image: linear-gradient(to right, #2563eb, #9333ea); /* from-blue-600 to-purple-600 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback */
+        }
+
+        /* Game Canvas */
+        #gameCanvas {
+            background-color: #4CAF50; /* Green fallback for road */
+            border: 5px solid #333;
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto 1.5rem auto;
+            width: 100%; /* Make canvas responsive */
+            max-width: 800px; /* Max width for larger screens */
+            height: 400px; /* Fixed height for the game area */
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden; /* Hide anything outside canvas bounds */
+        }
+
+        /* Typing Area */
+        .typing-area-container {
+            background-color: #f9fafb; /* bg-gray-50 */
+            padding: 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            margin-bottom: 1.5rem;
+            min-height: 9.375rem; /* min-h-[150px] */
+            overflow: hidden;
+            position: relative;
+        }
+        .text-display {
+            font-size: 1.25rem; /* text-xl */
+            line-height: 1.625; /* leading-relaxed */
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* font-mono */
+            white-space: pre-wrap;
+            color: #374151; /* text-gray-700 */
+        }
+        .typing-input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: text;
+            z-index: 10;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: transparent; /* Hide typed text in the input itself */
+        }
+
+        /* Correct/Incorrect/Cursor Colors */
+        .char-correct {
+            color: #16a34a; /* text-green-600 */
+        }
+        .char-incorrect {
+            color: #dc2626; /* text-red-600 */
+        }
+        .char-cursor {
+            border-bottom: 2px solid #3b82f6; /* border-blue-500 */
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Game Status/Results Overlay */
+        #gameStatusOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            z-index: 20;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        #gameStatusOverlay h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        #gameStatusOverlay p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #eee;
+        }
+        #gameStatusOverlay button {
+            padding: 0.8rem 2rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        #gameStatusOverlay button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.4);
+        }
+
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .control-button {
+            padding: 0.8rem 2rem;
+            background-image: linear-gradient(to right, #2563eb, #9333ea);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .control-button:hover {
+            box-shadow: 0 8px 10px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* AdSense Placeholder - Consistent with previous apps */
+        .adsense-placeholder {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            color: #4b5563; /* text-gray-600 */
+            font-size: 0.875rem; /* text-sm */
+        }
+
+        /* Basic Animations */
+        @keyframes pulse {
+            0%, 100% { border-color: #3b82f6; } /* blue-500 */
+            50% { border-color: #a78bfa; } /* purple-400 */
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="title-gradient">Typing Race!</span>
+        </h1>
+
+        <div style="position: relative;">
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+            <div id="gameStatusOverlay" class="hidden">
+                <h2 id="gameResultText"></h2>
+                <p id="gameStatsText"></p>
+                <button id="restartGameButton">Play Again</button>
+            </div>
+        </div>
+
+
+        <!-- Typing Area -->
+        <div class="typing-area-container">
+            <p id="textToTypeDisplay" class="text-display">Click "Start Race" to begin!</p>
+            <input type="text" id="typingInput" class="typing-input" autofocus disabled>
+        </div>
+
+        <div class="controls">
+            <button id="startGameButton" class="control-button">Start Race</button>
+            <button id="resetGameButton" class="control-button">Reset Game</button>
+            <button id="backToHomeButton" class="control-button">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Hidden Image elements for cars and road -->
+    <!-- REPLACE THESE PLACEHOLDER URLS WITH YOUR OWN HIGH-QUALITY PNGS -->
+    <img id="userCarImg" src="https://placehold.co/60x30/007bff/ffffff?text=YOU_CAR" style="display:none;">
+    <img id="aiCarImg1" src="https://placehold.co/60x30/dc3545/ffffff?text=AI1_CAR" style="display:none;">
+    <img id="aiCarImg2" src="https://placehold.co/60x30/ffc107/000000?text=AI2_CAR" style="display:none;">
+    <img id="aiCarImg3" src="https://placehold.co/60x30/28a745/ffffff?text=AI3_CAR" style="display:none;">
+    <img id="roadBackgroundImg" src="https://placehold.co/800x1200/404040/ffffff?text=ROAD_BACKGROUND" style="display:none;">
+
+
+    <!-- Google AdSense Placeholder - Consistent with previous apps -->
+    <div class="adsense-placeholder">
+        <!--
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_AD_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        -->
+        <p>Advertisement Area (Integrate Google AdSense or other ad platforms here)</p>
+    </div>
+
+    <script>
+        // --- Game Configuration ---
+        const GAME_WIDTH = 800;
+        const GAME_HEIGHT = 400;
+        const DPI_SCALE = 2; // For HD rendering
+
+        const ROAD_LINE_HEIGHT = 5;
+        const ROAD_LINE_COLOR = '#fff';
+        const ROAD_LINE_DASH = [20, 15]; // Dash length, space length
+
+        const CAR_WIDTH = 60;
+        const CAR_HEIGHT = 30;
+        const START_X = 50; // Starting X position for all cars
+        const FINISH_LINE_X = GAME_WIDTH - 80; // X position of the finish line
+
+        const AI_CAR_SPEED_BASE = 0.00005; // Base progress per millisecond for AI
+        const AI_SPEED_VARIANCE = 0.00002; // Max variance for AI speed
+
+        const ERROR_PENALTY_PROGRESS = 0.02; // Percentage of progress lost per error
+        const ROAD_SCROLL_SPEED_FACTOR = 0.5; // How fast the road scrolls relative to user car progress
+
+        // --- Manual Content Data (from previous request) ---
+        const TYPING_TEXTS = [
+            "The ancient oak stood tall on the hill, its branches reaching towards the sky like gnarled fingers. Generations had passed beneath its shade, and countless stories were whispered among its leaves. A lone traveler paused, gazing at its timeless beauty, feeling a sense of peace settle over them.",
+            "In a bustling city, a small cafe offered a quiet escape. The aroma of freshly brewed coffee mingled with the scent of old books. People from all walks of life found solace here, sharing laughter and hushed conversations, each lost in their own world yet connected by the shared space.",
+            "The deep blue ocean stretched endlessly, hiding mysteries beneath its surface. Schools of colorful fish darted through coral reefs, while larger creatures patrolled the depths. A gentle current pulled a message in a bottle towards an unknown shore, carrying hopes and dreams across the vast expanse.",
+            "A scientist meticulously worked in their lab, surrounded by beakers and complex machinery. The pursuit of knowledge was their driving force, pushing them to unravel the secrets of the universe, one experiment at a time. Every discovery, no matter how small, brought them closer to understanding.",
+            "The old lighthouse stood sentinel on the rocky coast, its beam cutting through the inky blackness of the night. It had guided countless ships safely to harbor, a beacon of hope against the treacherous waves. Its solitary vigil was a testament to endurance and unwavering purpose.",
+            "The digital realm is a vast and ever-expanding landscape, constantly evolving with new technologies and innovations. From artificial intelligence to virtual reality, the possibilities seem limitless. Navigating this intricate web requires adaptability and a willingness to embrace continuous learning.",
+            "Through the dense forest, sunlight dappled the mossy ground, illuminating hidden pathways. The air was crisp with the scent of pine and damp earth. A chorus of birdsong filled the canopy, creating a symphony of nature that soothed the soul and invited quiet contemplation.",
+            "Cooking is an art form that blends creativity with precision. Each ingredient plays a vital role, contributing to the overall flavor and texture of a dish. The process from raw components to a delicious meal is a journey of transformation, culminating in a delightful sensory experience.",
+            "Exploring new cultures offers a unique perspective on the world. Language, customs, and traditions vary widely across the globe, each reflecting a rich history and unique way of life. Immersing oneself in these differences fosters understanding and broadens one's horizons.",
+            "The universe is an awe-inspiring tapestry of stars, planets, and galaxies, stretching beyond our comprehension. Astronomers tirelessly observe celestial phenomena, unraveling the cosmic mysteries that have captivated humanity for millennia. Every discovery brings us closer to understanding our place in the grand design.",
+            "The old bookstore smelled of paper and forgotten tales. Dust motes danced in the sunlight filtering through the tall windows, illuminating rows upon rows of literary treasures. Each spine held a different world, waiting to be discovered by a curious reader.",
+            "A gentle rain began to fall, tapping softly on the rooftop. The world outside transformed into a blurred watercolor, and the air grew cool and fresh. It was the perfect moment for a warm cup of tea and quiet reflection by the window.",
+            "The distant mountains stood majestic, their peaks shrouded in a soft mist. As the sun rose, golden light touched the highest points, slowly revealing the rugged beauty of the landscape. It was a sight that inspired awe and a sense of timelessness.",
+            "Innovation often springs from unexpected places. A simple idea, nurtured with persistence and creativity, can blossom into something revolutionary. The journey from concept to reality is filled with challenges, but the potential for impact makes it worthwhile.",
+            "The ancient forest whispered secrets through its rustling leaves. Old trees, centuries old, formed a living cathedral, their roots intertwined deep beneath the earth. Wildlife moved silently among the undergrowth, a vibrant ecosystem thriving in harmony.",
+            "In the quiet of the evening, the city lights began to twinkle. Each glow represented a life, a story, a dream unfolding beneath the vast sky. From a high vantage point, the urban sprawl looked like a glittering constellation on the dark ground.",
+            "The art of storytelling has been central to human culture for millennia. From ancient myths to modern novels, narratives connect us, teach us, and entertain us. A well-told story can transport listeners to different times and places, sparking imagination.",
+            "Learning a new skill requires patience and dedication. There will be moments of frustration and doubt, but consistent practice leads to gradual improvement. The satisfaction of mastering something new is a reward that truly motivates continued effort.",
+            "The river flowed calmly towards the sea, reflecting the changing colors of the sky. Along its banks, diverse flora and fauna thrived, sustained by its life-giving waters. It. was a constant journey, mirroring the passage of time and the cycles of nature.",
+            "A small, independent coffee shop became a hub for the community. Locals gathered there daily, sharing news, laughter, and ideas over their favorite brews. It. was more than just a place for coffee; it was a warm, welcoming space where connections were forged."
+        ];
+
+        // --- Game State Variables ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const textToTypeDisplay = document.getElementById('textToTypeDisplay');
+        const typingInput = document.getElementById('typingInput');
+        const startGameButton = document.getElementById('startGameButton');
+        const resetGameButton = document.getElementById('resetGameButton');
+        const backToHomeButton = document.getElementById('backToHomeButton');
+        const gameStatusOverlay = document.getElementById('gameStatusOverlay');
+        const gameResultText = document.getElementById('gameResultText');
+        const gameStatsText = document.getElementById('gameStatsText');
+        const restartGameButton = document.getElementById('restartGameButton');
+
+        let cars = [];
+        let typingText = '';
+        let typedCharsCount = 0;
+        let correctTypedChars = 0;
+        let errors = 0;
+        let gameStarted = false;
+        let gameOver = false;
+        let startTime = 0;
+        let animationFrameId = null;
+        let lastFrameTime = 0;
+        let roadOffset = 0; // For scrolling the road background
+
+        // --- Image Elements ---
+        const userCarImg = document.getElementById('userCarImg');
+        const aiCarImg1 = document.getElementById('aiCarImg1');
+        const aiCarImg2 = document.getElementById('aiCarImg2');
+        const aiCarImg3 = document.getElementById('aiCarImg3');
+        const roadBackgroundImg = document.getElementById('roadBackgroundImg');
+
+        const carImages = {
+            user: userCarImg,
+            ai1: aiCarImg1,
+            ai2: aiCarImg2,
+            ai3: aiCarImg3
+        };
+
+        let imagesLoadedCount = 0;
+        const totalImagesToLoad = Object.keys(carImages).length + 1; // +1 for road background
+
+        // --- Image Loading Function ---
+        function loadImage(imgElement, callback) {
+            if (imgElement.complete) { // Check if image is already loaded (e.g., from cache)
+                imagesLoadedCount++;
+                if (imagesLoadedCount === totalImagesToLoad) {
+                    callback();
+                }
+            } else {
+                imgElement.onload = () => {
+                    imagesLoadedCount++;
+                    if (imagesLoadedCount === totalImagesToLoad) {
+                        callback();
+                    }
+                };
+                imgElement.onerror = () => {
+                    console.error(`Failed to load image: ${imgElement.src}. Using fallback.`);
+                    imgElement.isFallback = true; // Mark as fallback
+                    imagesLoadedCount++;
+                    if (imagesLoadedCount === totalImagesToLoad) {
+                        callback();
+                    }
+                };
+            }
+        }
+
+        // --- Game Initialization ---
+        function initGame() {
+            // Reset game state
+            cars = [];
+            typedCharsCount = 0;
+            correctTypedChars = 0;
+            errors = 0;
+            gameStarted = false;
+            gameOver = false;
+            startTime = 0;
+            roadOffset = 0; // Reset road scroll
+
+            // Select a random typing text
+            typingText = TYPING_TEXTS[Math.floor(Math.random() * TYPING_TEXTS.length)];
+            textToTypeDisplay.innerHTML = renderTypingText();
+            typingInput.value = '';
+            typingInput.disabled = true; // Disable until game starts
+            typingInput.focus();
+
+            gameStatusOverlay.classList.add('hidden'); // Hide game over overlay
+
+            // Clear any previous animation frame
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+
+            // Setup cars
+            const SHOULDER_HEIGHT = 20; // Must match CSS
+            const trackAreaHeight = GAME_HEIGHT - 2 * SHOULDER_HEIGHT;
+            const laneCount = 4; // User + 3 AIs
+            const laneHeight = trackAreaHeight / laneCount;
+
+            const carYs = []; // Y positions for car centers
+            for(let i = 0; i < laneCount; i++) {
+                carYs.push(SHOULDER_HEIGHT + (i * laneHeight) + (laneHeight / 2) - (CAR_HEIGHT / 2));
+            }
+
+            // Shuffle car Y positions to make it dynamic
+            for (let i = carYs.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [carYs[i], carYs[j]] = [carYs[j], carYs[i]];
+            }
+
+            // User Car
+            cars.push({
+                name: 'YOU',
+                img: carImages.user,
+                x: START_X,
+                y: carYs.pop(), // Assign a random Y position
+                progress: 0, // 0 to 1, representing completion of typing text
+                isUser: true
+            });
+
+            // AI Cars
+            const aiCarKeys = ['ai1', 'ai2', 'ai3'];
+            for (let i = 0; i < 3; i++) {
+                cars.push({
+                    name: `AI${i + 1}`,
+                    img: carImages[aiCarKeys[i]],
+                    x: START_X,
+                    y: carYs.pop(), // Assign a random Y position
+                    progress: 0,
+                    isUser: false,
+                    targetProgressPerMs: AI_CAR_SPEED_BASE + (Math.random() * AI_SPEED_VARIANCE * 2 - AI_SPEED_VARIANCE) // Varied speed
+                });
+            }
+
+            drawGame(); // Draw initial state
+        }
+
+        // --- Game Loop ---
+        function gameLoop(currentTime) {
+            if (!gameStarted || gameOver) {
+                lastFrameTime = currentTime; // Keep updating lastFrameTime even when paused/over
+                animationFrameId = requestAnimationFrame(gameLoop);
+                return;
+            }
+
+            const deltaTime = currentTime - lastFrameTime;
+            lastFrameTime = currentTime;
+
+            update(deltaTime);
+            drawGame();
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // --- Update Game State ---
+        function update(deltaTime) {
+            // Update car positions based on their progress
+            cars.forEach(car => {
+                if (car.isUser) {
+                    // User car progress is directly tied to typing progress
+                    // Road scrolls based on user's progress
+                    roadOffset = (roadOffset + (car.progress * ROAD_SCROLL_SPEED_FACTOR * deltaTime)) % roadBackgroundImg.height;
+                } else {
+                    // AI car progress
+                    car.progress += car.targetProgressPerMs * deltaTime;
+                }
+
+                // Check for win condition
+                if (car.progress >= 1 && !gameOver) {
+                    gameOver = true;
+                    cancelAnimationFrame(animationFrameId);
+                    displayGameResult(car.name);
+                }
+            });
+        }
+
+        // --- Drawing Functions ---
+        function drawGame() {
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+            // Draw road background image, scrolling vertically
+            if (roadBackgroundImg && !roadBackgroundImg.isFallback) {
+                // Draw two copies of the image to create a seamless loop
+                ctx.drawImage(roadBackgroundImg, 0, roadOffset, GAME_WIDTH, roadBackgroundImg.height);
+                ctx.drawImage(roadBackgroundImg, 0, roadOffset - roadBackgroundImg.height, GAME_WIDTH, roadBackgroundImg.height);
+            } else {
+                // Fallback: Draw solid green road
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            }
+
+            // Add road shoulders (grayish)
+            ctx.fillStyle = '#607D8B'; // Gray
+            const SHOULDER_HEIGHT = 20;
+            ctx.fillRect(0, 0, GAME_WIDTH, SHOULDER_HEIGHT); // Top shoulder
+            ctx.fillRect(0, GAME_HEIGHT - SHOULDER_HEIGHT, GAME_WIDTH, SHOULDER_HEIGHT); // Bottom shoulder
+
+            // Draw central solid yellow line
+            ctx.strokeStyle = '#FFD700'; // Gold color
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, GAME_HEIGHT / 2);
+            ctx.lineTo(GAME_WIDTH, GAME_HEIGHT / 2);
+            ctx.stroke();
+
+            // Draw dashed lane lines
+            ctx.strokeStyle = ROAD_LINE_COLOR;
+            ctx.lineWidth = ROAD_LINE_HEIGHT;
+            ctx.setLineDash(ROAD_LINE_DASH);
+
+            const trackAreaHeight = GAME_HEIGHT - 2 * SHOULDER_HEIGHT;
+            const laneCount = 4; // User + 3 AIs
+            const laneHeight = trackAreaHeight / laneCount;
+
+            for (let i = 0; i < laneCount; i++) { // Draw lines for each lane
+                ctx.beginPath();
+                ctx.moveTo(0, SHOULDER_HEIGHT + (i * laneHeight));
+                ctx.lineTo(GAME_WIDTH, SHOULDER_HEIGHT + (i * laneHeight));
+                ctx.stroke();
+            }
+            ctx.setLineDash([]); // Reset line dash
+
+            // Draw finish line
+            ctx.fillStyle = '#FFD700'; // Gold color
+            ctx.fillRect(FINISH_LINE_X, 0, 5, GAME_HEIGHT); // Vertical line
+
+            // Draw cars (PNGs or fallback rectangles)
+            cars.forEach(car => {
+                const carX = START_X + car.progress * (FINISH_LINE_X - START_X - CAR_WIDTH);
+                
+                if (car.img && !car.img.isFallback && car.img.complete) {
+                    ctx.drawImage(car.img, carX, car.y, CAR_WIDTH, CAR_HEIGHT);
+                } else {
+                    // Fallback: Draw colored rectangle with text
+                    ctx.fillStyle = car.isUser ? '#007bff' : (car.name === 'AI1' ? '#dc3545' : (car.name === 'AI2' ? '#ffc107' : '#28a745'));
+                    ctx.fillRect(carX, car.y, CAR_WIDTH, CAR_HEIGHT);
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(carX, car.y, CAR_WIDTH, CAR_HEIGHT);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '10px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(car.name, carX + CAR_WIDTH / 2, car.y + CAR_HEIGHT / 2);
+                }
+            });
+
+            // Display WPM and Accuracy
+            ctx.font = '16px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'left';
+            const currentWPM = calculateWPM();
+            const currentAccuracy = calculateAccuracy();
+            ctx.fillText(`WPM: ${currentWPM}`, 10, 20);
+            ctx.fillText(`Accuracy: ${currentAccuracy}%`, 10, 40);
+        }
+
+        // --- Typing Input Handling ---
+        function handleTypingInput(event) {
+            if (gameOver || !gameStarted) {
+                event.preventDefault(); // Prevent typing if game not started/over
+                return;
+            }
+
+            const inputValue = event.target.value;
+            
+            // Update typedCharsCount based on actual input length
+            typedCharsCount = inputValue.length;
+
+            // Recalculate correctTypedChars and errors based on current input value
+            correctTypedChars = 0;
+            errors = 0;
+            for (let i = 0; i < typedCharsCount; i++) {
+                if (inputValue[i] === typingText[i]) {
+                    correctTypedChars++;
+                } else {
+                    errors++;
+                }
+            }
+
+            // Update user car progress based on correct characters
+            cars[0].progress = correctTypedChars / typingText.length;
+
+            // Apply error penalty if the last typed character was incorrect
+            if (typedCharsCount > 0 && inputValue[typedCharsCount - 1] !== typingText[typedCharsCount - 1]) {
+                cars[0].progress = Math.max(0, cars[0].progress - ERROR_PENALTY_PROGRESS);
+            }
+
+            // Update displayed text with colors
+            textToTypeDisplay.innerHTML = renderTypingText();
+
+            // Check if user has typed the entire text
+            if (typedCharsCount === typingText.length) {
+                cars[0].progress = 1; // Ensure car reaches finish line visually
+                if (!gameOver) {
+                    gameOver = true;
+                    cancelAnimationFrame(animationFrameId);
+                    displayGameResult(cars[0].name);
+                }
+            }
+        }
+
+        // --- Render Typing Text with Colors ---
+        function renderTypingText() {
+            let html = '';
+            const currentInputValue = typingInput.value; // Get the actual input value
+            for (let i = 0; i < typingText.length; i++) {
+                let char = typingText[i];
+                let colorClass = '';
+
+                if (i < currentInputValue.length) {
+                    // Character has been typed
+                    colorClass = (char === currentInputValue[i]) ? 'char-correct' : 'char-incorrect';
+                }
+
+                // Add pulsating cursor at the current typing position
+                if (i === currentInputValue.length && !gameOver) {
+                    colorClass += ' char-cursor';
+                }
+
+                html += `<span class="${colorClass}">${char}</span>`;
+            }
+            return html;
+        }
+
+        // --- Calculate WPM and Accuracy ---
+        function calculateWPM() {
+            if (!gameStarted || typedCharsCount === 0) return 0;
+            const elapsedTimeSeconds = (performance.now() - startTime) / 1000;
+            if (elapsedTimeSeconds === 0) return 0;
+            const wordsTyped = correctTypedChars / 5; // Standard WPM calculation based on correct chars
+            return Math.round(wordsTyped / (elapsedTimeSeconds / 60));
+        }
+
+        function calculateAccuracy() {
+            if (typedCharsCount === 0) return 100;
+            return ((correctTypedChars / typedCharsCount) * 100).toFixed(2);
+        }
+
+        // --- Display Game Result ---
+        function displayGameResult(winnerName) {
+            gameStatusOverlay.classList.remove('hidden');
+            gameResultText.textContent = `${winnerName} Wins!`;
+            const finalWPM = calculateWPM();
+            const finalAccuracy = calculateAccuracy();
+            const elapsedTimeSeconds = ((performance.now() - startTime) / 1000).toFixed(1);
+            gameStatsText.innerHTML = `Your WPM: ${finalWPM}<br>Accuracy: ${finalAccuracy}%<br>Time: ${elapsedTimeSeconds}s`;
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial image loading setup
+            loadImage(userCarImg, () => {});
+            loadImage(aiCarImg1, () => {});
+            loadImage(aiCarImg2, () => {});
+            loadImage(aiCarImg3, () => {});
+            loadImage(roadBackgroundImg, () => {
+                // Once all images are loaded, initialize the game
+                initGame();
+            });
+
+            // Ensure input stays focused
+            typingInput.addEventListener('blur', () => {
+                if (!gameOver && gameStarted) {
+                    typingInput.focus();
+                }
+            });
+
+            typingInput.addEventListener('input', handleTypingInput);
+            typingInput.addEventListener('keydown', (event) => {
+                // Prevent spacebar from scrolling the page if it's not the expected character
+                if (event.key === ' ' && typingText[typedCharsCount] !== ' ') {
+                    event.preventDefault();
+                }
+            });
+
+
+            startGameButton.addEventListener('click', () => {
+                if (!gameStarted && !gameOver) {
+                    gameStarted = true;
+                    startTime = performance.now();
+                    typingInput.disabled = false;
+                    typingInput.focus();
+                    lastFrameTime = performance.now(); // Initialize lastFrameTime
+                    animationFrameId = requestAnimationFrame(gameLoop); // Start the game loop
+                }
+            });
+
+            resetGameButton.addEventListener('click', initGame);
+            restartGameButton.addEventListener('click', initGame); // For game over overlay button
+
+            backToHomeButton.addEventListener('click', () => {
+                // Navigate back to the landing page
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
