@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Typing: Word by Word - SpeedType Pro</title>
+    <meta name="description" content="Improve typing accuracy and rhythm with Focus Typing: Word by Word. Type one word at a time, with instant feedback, for a distraction-free practice.">
+    <meta name="keywords" content="typing, focus typing, word by word, typing practice, accuracy, rhythm, speed typing, online typing, zen typing">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles - Consistent with previous apps */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin: 0;
+            color: #1f2937; /* Default text color */
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Main Container - Consistent with previous apps */
+        .container {
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            padding: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+        }
+        .container:hover {
+            transform: scale(1.005);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* hover:shadow-2xl */
+        }
+
+        /* Heading - Consistent with previous apps */
+        .title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            text-align: center;
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em; /* tracking-tight */
+        }
+        .title-gradient {
+            background-image: linear-gradient(to right, #2563eb, #9333ea); /* from-blue-600 to-purple-600 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback */
+        }
+
+        /* Typing Area */
+        .typing-area-container {
+            background-color: #f9fafb; /* bg-gray-50 */
+            padding: 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            margin-bottom: 1.5rem;
+            min-height: 9.375rem; /* min-h-[150px] */
+            display: flex;
+            flex-wrap: wrap; /* Allow words to wrap */
+            justify-content: center; /* Center words horizontally */
+            align-items: center; /* Center words vertically */
+            font-size: 1.5rem; /* Slightly larger font for readability */
+            line-height: 1.6;
+            position: relative; /* For cursor positioning */
+        }
+
+        .word-span {
+            padding: 0 0.25em; /* Space between words */
+            color: #888; /* Faded color for upcoming words */
+            transition: color 0.2s ease-in-out; /* Smooth color change */
+            display: inline-block; /* Ensure padding works */
+        }
+
+        .word-span.current {
+            color: #1f2937; /* Darker color for the current word */
+            font-weight: 600;
+        }
+
+        .word-span.correct-char {
+            color: #16a34a; /* Green for correctly typed characters */
+        }
+
+        .word-span.incorrect-char {
+            color: #dc2626; /* Red for incorrectly typed characters */
+        }
+
+        .typing-input {
+            position: absolute; /* Position over the current word area */
+            bottom: 1.5rem; /* Align with bottom padding */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%; /* Adjust width as needed */
+            padding: 0.75rem 1rem;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 2px solid #2563eb; /* Blue border */
+            border-radius: 0.5rem;
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            background-color: #fff;
+            color: #1f2937;
+        }
+        .typing-input:focus {
+            border-color: #9333ea; /* Purple on focus */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        .typing-input.error-state {
+            border-color: #dc2626; /* Red border on error */
+            box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .control-button {
+            padding: 0.8rem 2rem;
+            background-image: linear-gradient(to right, #2563eb, #9333ea);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .control-button:hover {
+            box-shadow: 0 8px 10px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* AdSense Placeholder - Consistent with previous apps */
+        .adsense-placeholder {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            color: #4b5563; /* text-gray-600 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="title-gradient">Focus Typing: Word by Word</span>
+        </h1>
+
+        <div class="typing-area-container">
+            <div id="wordDisplay">
+                <!-- Words will be rendered here -->
+            </div>
+            <input type="text" id="typingInput" class="typing-input" autofocus disabled placeholder="Start typing here...">
+        </div>
+
+        <div class="controls">
+            <button id="startButton" class="control-button">Start Practice</button>
+            <button id="resetButton" class="control-button">Reset</button>
+            <button id="backToHomeButton" class="control-button">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Google AdSense Placeholder - Consistent with previous apps -->
+    <div class="adsense-placeholder">
+        <!--
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_AD_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        -->
+        <p>Advertisement Area (Integrate Google AdSense or other ad platforms here)</p>
+    </div>
+
+    <script>
+        // --- Manual Content Data (reusing paragraphs from previous apps) ---
+        const ALL_TYPING_PARAGRAPHS = [
+            "The ancient oak stood tall on the hill, its branches reaching towards the sky like gnarled fingers. Generations had passed beneath its shade, and countless stories were whispered among its leaves. A lone traveler paused, gazing at its timeless beauty, feeling a sense of peace settle over them.",
+            "In a bustling city, a small cafe offered a quiet escape. The aroma of freshly brewed coffee mingled with the scent of old books. People from all walks of life found solace here, sharing laughter and hushed conversations, each lost in their own world yet connected by the shared space.",
+            "The deep blue ocean stretched endlessly, hiding mysteries beneath its surface. Schools of colorful fish darted through coral reefs, while larger creatures patrolling the depths. A gentle current pulled a message in a bottle towards an unknown shore, carrying hopes and dreams across the vast expanse.",
+            "A scientist meticulously worked in their lab, surrounded by beakers and complex machinery. The pursuit of knowledge was their driving force, pushing them to unravel the secrets of the universe, one experiment at a time. Every discovery, no matter how small, brought them closer to understanding.",
+            "The old lighthouse stood sentinel on the rocky coast, its beam cutting through the inky blackness of the night. It had guided countless ships safely to harbor, a beacon of hope against the treacherous waves. Its solitary vigil was a testament to endurance and unwavering purpose.",
+            "The digital realm is a vast and ever-expanding landscape, constantly evolving with new technologies and innovations. From artificial intelligence to virtual reality, the possibilities seem limitless. Navigating this intricate web requires adaptability and a willingness to embrace continuous learning.",
+            "Through the dense forest, sunlight dappled the mossy ground, illuminating hidden pathways. The air was crisp with the scent of pine and damp earth. A chorus of birdsong filled the canopy, creating a symphony of nature that soothed the soul and invited quiet contemplation.",
+            "Cooking is an art form that blends creativity with precision. Each ingredient plays a vital role, contributing to the overall flavor and texture of a dish. The process from raw components to a delicious meal is a journey of transformation, culminating in a delightful sensory experience.",
+            "Exploring new cultures offers a unique perspective on the world. Language, customs, and traditions vary widely across the globe, each reflecting a rich history and unique way of life. Immersing oneself in these differences fosters understanding and broadens one's horizons.",
+            "The universe is an awe-inspiring tapestry of stars, planets, and galaxies, stretching beyond our comprehension. Astronomers tirelessly observe celestial phenomena, unraveling the cosmic mysteries that have captivated humanity for millennia. Every discovery brings us closer to understanding our place in the grand design.",
+            "The old bookstore smelled of paper and forgotten tales. Dust motes danced in the sunlight filtering through the tall windows, illuminating rows upon rows of literary treasures. Each spine held a different world, waiting to be discovered by a curious reader.",
+            "A gentle rain began to fall, tapping softly on the rooftop. The world outside transformed into a blurred watercolor, and the air grew cool and fresh. It was the perfect moment for a warm cup of tea and quiet reflection by the window.",
+            "The distant mountains stood majestic, their peaks shrouded in a soft mist. As the sun rose, golden light touched the highest points, slowly revealing the rugged beauty of the landscape. It was a sight that inspired awe and a sense of timelessness.",
+            "Innovation often springs from unexpected places. A simple idea, nurtured with persistence and creativity, can blossom into something revolutionary. The journey from concept to reality is filled with challenges, but the potential for impact makes it worthwhile.",
+            "The ancient forest whispered secrets through its rustling leaves. Old trees, centuries old, formed a living cathedral, their roots intertwined deep beneath the earth. Wildlife moved silently among the undergrowth, a vibrant ecosystem thriving in harmony.",
+            "In the quiet of the evening, the city lights began to twinkle. Each glow represented a life, a story, a dream unfolding beneath the vast sky. From a high vantage point, the urban sprawl looked like a glittering constellation on the dark ground.",
+            "The art of storytelling has been central to human culture for millennia. From ancient myths to modern novels, narratives connect us, teach us, and entertain us. A well-told story can transport listeners to different times and places, sparking imagination.",
+            "Learning a new skill requires patience and dedication. There will be moments of frustration and doubt, but consistent practice leads to gradual improvement. The satisfaction of mastering something new is a reward that truly motivates continued effort.",
+            "The river flowed calmly towards the sea, reflecting the changing colors of the sky. Along its banks, diverse flora and fauna thrived, sustained by its life-giving waters. It. was a constant journey, mirroring the passage of time and the cycles of nature.",
+            "A small, independent coffee shop became a hub for the community. Locals gathered there daily, sharing news, laughter, and ideas over their favorite brews. It. was more than just a place for coffee; it was a warm, welcoming space where connections were forged."
+        ];
+
+        // --- Global State Variables ---
+        let currentWords = []; // Array of words for the current paragraph
+        let currentWordIndex = 0; // Index of the word currently being typed
+        let typedCharsInCurrentWord = ''; // What the user has typed for the current word
+        let totalErrors = 0; // Total errors across all words
+
+        // --- DOM Elements ---
+        const wordDisplay = document.getElementById('wordDisplay');
+        const typingInput = document.getElementById('typingInput');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const backToHomeButton = document.getElementById('backToHomeButton');
+
+        // --- Game Logic ---
+        function initFocusTyping() {
+            // Reset state
+            currentWords = [];
+            currentWordIndex = 0;
+            typedCharsInCurrentWord = '';
+            totalErrors = 0;
+
+            // Select a random paragraph and split into words
+            const randomParagraph = ALL_TYPING_PARAGRAPHS[Math.floor(Math.random() * ALL_TYPING_PARAGRAPHS.length)];
+            currentWords = randomParagraph.split(/\s+/); // Split by one or more spaces
+
+            typingInput.value = '';
+            typingInput.disabled = true;
+            typingInput.focus();
+            typingInput.classList.remove('error-state'); // Clear any error state
+
+            renderWordDisplay(); // Render initial words
+        }
+
+        function handleTypingInput(event) {
+            if (typingInput.disabled) return;
+
+            const inputValue = event.target.value;
+            const targetWord = currentWords[currentWordIndex];
+
+            // If user types a space and the current word is correct
+            if (event.data === ' ' && typedCharsInCurrentWord === targetWord) {
+                currentWordIndex++;
+                typedCharsInCurrentWord = '';
+                typingInput.value = '';
+                typingInput.classList.remove('error-state');
+                renderWordDisplay();
+
+                // Check if all words are typed
+                if (currentWordIndex >= currentWords.length) {
+                    typingInput.disabled = true;
+                    wordDisplay.innerHTML += '<span style="color:#888;"> (Practice complete! Click Reset for a new text.)</span>';
+                }
+                return; // Exit as word is completed
+            }
+
+            // Handle backspace
+            if (event.inputType === 'deleteContentBackward' || event.key === 'Backspace') {
+                typedCharsInCurrentWord = inputValue;
+            } else if (event.data && event.data !== ' ') { // Only process new character input
+                const typedChar = event.data;
+                const expectedChar = targetWord[typedCharsInCurrentWord.length];
+
+                if (typedChar === expectedChar) {
+                    typedCharsInCurrentWord += typedChar;
+                    typingInput.classList.remove('error-state');
+                } else {
+                    // Incorrect character. Do not add to typedCharsInCurrentWord.
+                    // The input field will show the incorrect char, but our internal state won't advance.
+                    // We must revert the input field to match our internal state.
+                    typingInput.value = typedCharsInCurrentWord;
+                    totalErrors++;
+                    typingInput.classList.add('error-state');
+                }
+            } else if (event.data === ' ' && typedCharsInCurrentWord !== targetWord) {
+                // User pressed space but word is not correct - prevent space from being added
+                event.preventDefault();
+                typingInput.value = typedCharsInCurrentWord; // Revert input to exclude the space
+                typingInput.classList.add('error-state');
+                totalErrors++;
+            }
+
+            renderWordDisplay(); // Update visual feedback
+        }
+
+        function renderWordDisplay() {
+            let html = '';
+            for (let i = 0; i < currentWords.length; i++) {
+                const word = currentWords[i];
+                let wordClass = 'word-span';
+                let wordContent = '';
+
+                if (i < currentWordIndex) {
+                    // Already typed words - fully correct
+                    wordClass += ' correct-char'; // Apply green to whole word
+                    wordContent = word;
+                } else if (i === currentWordIndex) {
+                    // Current word being typed
+                    wordClass += ' current';
+                    const typedPart = typedCharsInCurrentWord;
+
+                    for (let j = 0; j < word.length; j++) {
+                        const char = word[j];
+                        if (j < typedPart.length) {
+                            // Typed characters within the current word
+                            wordContent += `<span class="${char === typedPart[j] ? 'correct-char' : 'incorrect-char'}">${char}</span>`;
+                        } else {
+                            // Untyped characters in the current word
+                            wordContent += `<span>${char}</span>`;
+                        }
+                    }
+                } else {
+                    // Upcoming words - faded
+                    wordContent = word;
+                }
+                html += `<span class="${wordClass}">${wordContent}</span>`;
+            }
+            wordDisplay.innerHTML = html;
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initFocusTyping(); // Initialize on page load
+
+            // Ensure input stays focused (important for hidden inputs)
+            typingInput.addEventListener('blur', () => {
+                if (!typingInput.disabled) {
+                    typingInput.focus();
+                }
+            });
+
+            typingInput.addEventListener('input', handleTypingInput);
+            typingInput.addEventListener('keydown', (event) => {
+                // Prevent default behavior for spacebar to avoid page scrolling
+                if (event.key === ' ') {
+                    // Allow space only if the current word is fully and correctly typed
+                    if (typedCharsInCurrentWord !== currentWords[currentWordIndex]) {
+                        event.preventDefault();
+                    }
+                }
+            });
+
+            startButton.addEventListener('click', () => {
+                if (typingInput.disabled) { // Only start if currently disabled (initial state or finished)
+                    initFocusTyping(); // Reset and prepare for new typing
+                    typingInput.disabled = false;
+                    typingInput.focus();
+                }
+            });
+
+            resetButton.addEventListener('click', initFocusTyping); // Reset to initial state
+
+            backToHomeButton.addEventListener('click', () => {
+                window.location.href = 'index.html'; // Navigate back to the landing page
+            });
+        });
+    </script>
+</body>
+</html>

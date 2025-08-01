@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test - SpeedType Pro</title>
+    <meta name="description" content="Test and improve your typing speed and accuracy with SpeedType Pro. Practice with paragraphs and sentences, track WPM, accuracy, and view your typing speed graph.">
+    <meta name="keywords" content="typing test, typing speed, wpm test, typing practice, online typing, keyboard test, speed graph, wpm graph, line graph, bar graph, dot graph, area graph, accuracy, free typing test">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin: 0;
+            color: #1f2937; /* Default text color */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Main Container */
+        .container {
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            padding: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+        }
+        .container:hover {
+            transform: scale(1.005);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* hover:shadow-2xl */
+        }
+
+        /* Heading */
+        .title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            text-align: center;
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em; /* tracking-tight */
+        }
+        .title-gradient {
+            background-image: linear-gradient(to right, #2563eb, #9333ea); /* from-blue-600 to-purple-600 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback */
+        }
+
+        /* Customization Options */
+        .customization-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .option-label {
+            color: #374151; /* text-gray-700 */
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 0.5rem;
+        }
+        .option-buttons {
+            display: flex;
+            gap: 0.5rem; /* Tailwind's space-x-2 */
+        }
+        .option-button {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; /* rounded-full */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 600; /* font-semibold */
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .option-button.active {
+            background-color: #2563eb; /* bg-blue-600 */
+            color: #ffffff; /* text-white */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-lg */
+        }
+        .option-button:not(.active) {
+            background-color: #e5e7eb; /* bg-gray-200 */
+            color: #1f2937; /* text-gray-800 */
+        }
+        .option-button:not(.active):hover {
+            background-color: #dbeafe; /* hover:bg-blue-100 */
+        }
+
+        /* Generate New Text Button */
+        .generate-text-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .generate-text-button {
+            padding: 0.75rem 1.5rem;
+            background-image: linear-gradient(to right, #a855f7, #6366f1); /* from-purple-500 to-indigo-500 */
+            color: #ffffff; /* text-white */
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 700; /* font-bold */
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-lg */
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .generate-text-button:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-xl */
+            transform: scale(1.05);
+        }
+        .generate-text-button svg {
+            width: 1.25rem; /* w-5 */
+            height: 1.25rem; /* h-5 */
+            margin-right: 0.5rem;
+        }
+        /* Loading indicator is no longer needed but keeping the style for robustness */
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            color: #2563eb; /* text-blue-600 */
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #2563eb; /* blue-600 */
+            border-radius: 50%;
+            width: 1.5rem; /* w-6 */
+            height: 1.5rem; /* h-6 */
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Typing Area */
+        .typing-area-container {
+            background-color: #f9fafb; /* bg-gray-50 */
+            padding: 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            margin-bottom: 1.5rem;
+            min-height: 9.375rem; /* min-h-[150px] */
+            overflow: hidden;
+            position: relative;
+        }
+        .text-display {
+            font-size: 1.25rem; /* text-xl */
+            line-height: 1.625; /* leading-relaxed */
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* font-mono */
+            white-space: pre-wrap;
+            color: #374151; /* text-gray-700 */
+        }
+        .typing-input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: text;
+            z-index: 10;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: transparent; /* Hide typed text in the input itself */
+        }
+
+        /* Correct/Incorrect/Cursor Colors */
+        .char-correct {
+            color: #16a34a; /* text-green-600 */
+        }
+        .char-incorrect {
+            color: #dc2626; /* text-red-600 */
+        }
+        .char-cursor {
+            border-bottom: 2px solid #3b82f6; /* border-blue-500 */
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Controls and Stats */
+        .controls-stats {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem; /* space-y-4 */
+        }
+        @media (min-width: 640px) { /* sm: */
+            .controls-stats {
+                flex-direction: row;
+                gap: 0; /* sm:space-y-0 */
+            }
+        }
+        .timer-display {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* text-gray-800 */
+            display: flex;
+            align-items: center;
+        }
+        .timer-display svg {
+            width: 2rem; /* w-8 */
+            height: 2rem; /* h-8 */
+            margin-right: 0.5rem;
+            color: #3b82f6; /* text-blue-500 */
+        }
+        .timer-value {
+            color: #2563eb; /* text-blue-600 */
+            margin-left: 0.5rem;
+        }
+        .restart-button {
+            padding: 1rem 2rem;
+            background-image: linear-gradient(to right, #22c55e, #14b8a6); /* from-green-500 to-teal-500 */
+            color: #ffffff; /* text-white */
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-lg */
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .restart-button:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-xl */
+            transform: translateY(-2px);
+        }
+        .restart-button svg {
+            width: 1.5rem; /* w-6 */
+            height: 1.5rem; /* h-6 */
+            margin-right: 0.5rem;
+        }
+
+        /* Results Display */
+        .results-section {
+            background-color: #eff6ff; /* bg-blue-50 */
+            padding: 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
+            border: 1px solid #bfdbfe; /* border border-blue-200 */
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .results-title {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            text-align: center;
+            color: #1e40af; /* text-blue-800 */
+            margin-bottom: 1rem;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            text-align: center;
+        }
+        @media (min-width: 640px) { /* sm: */
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) { /* lg: */
+            .results-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .result-item {
+            padding: 1rem;
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+            border: 1px solid #dbeafe; /* border border-blue-100 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        .result-value {
+            font-size: 3rem; /* text-5xl */
+            font-weight: 800; /* font-extrabold */
+        }
+        .result-label {
+            font-size: 1.125rem; /* text-lg */
+            color: #4b5563; /* text-gray-600 */
+            margin-top: 0.25rem;
+        }
+        .result-wpm { color: #9333ea; } /* text-purple-600 */
+        .result-wps { color: #0d9488; } /* text-teal-600 */
+        .result-accuracy { color: #ea580c; } /* text-orange-600 */
+        .result-errors { color: #dc2626; } /* text-red-600 */
+
+        /* Graph Section */
+        .graph-section {
+            margin-top: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+        }
+        .graph-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .graph-type-buttons {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .graph-type-button {
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        .graph-type-button.active {
+            background-color: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+        .graph-type-button:hover:not(.active) {
+            background-color: #dbeafe;
+        }
+
+        #speedGraphCanvas {
+            width: 100%;
+            max-width: 600px; /* Max width for the canvas */
+            height: 300px; /* Fixed height for the canvas */
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            margin-left: auto;
+            margin-right: auto;
+            display: block; /* Ensure it takes full width within its container */
+        }
+        .graph-buttons {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        /* Main share button at the bottom of results */
+        .share-button-container {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .share-button {
+            padding: 1rem 2rem;
+            background-image: linear-gradient(to right, #9333ea, #ec4899); /* from-purple-600 to-pink-600 */
+            color: #ffffff; /* text-white */
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-lg */
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .share-button:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-xl */
+            transform: scale(1.05);
+        }
+        .share-button svg {
+            width: 1.5rem; /* w-6 */
+            height: 1.5rem; /* h-6 */
+            margin-right: 0.5rem;
+        }
+
+        /* Share Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* bg-black bg-opacity-50 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 1rem;
+        }
+        .modal-content {
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            padding: 2rem;
+            width: 100%;
+            max-width: 28rem; /* max-w-md */
+            animation: scaleIn 0.3s ease-out forwards;
+        }
+        .modal-title {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .modal-message {
+            color: #374151; /* text-gray-700 */
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .modal-buttons {
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically */
+            justify-content: center;
+            gap: 1rem; /* space-y-4 */
+        }
+        .modal-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* rounded-full */
+            font-weight: 600; /* font-semibold */
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+            display: flex; /* For icon alignment */
+            align-items: center;
+            justify-content: center;
+            width: 100%; /* Make buttons take full width */
+        }
+        .modal-button svg {
+            width: 1.25rem; /* w-5 */
+            height: 1.25rem; /* h-5 */
+            margin-right: 0.5rem;
+        }
+        .modal-copy-link-button {
+            background-color: #2563eb; /* bg-blue-600 */
+            color: #ffffff;
+        }
+        .modal-copy-link-button:hover {
+            background-color: #1d4ed8; /* hover:bg-blue-700 */
+        }
+        .modal-download-image-button {
+            background-color: #0d9488; /* bg-teal-600 */
+            color: #ffffff;
+        }
+        .modal-download-image-button:hover {
+            background-color: #0f766e; /* hover:bg-teal-700 */
+        }
+        .modal-close-button {
+            background-color: #d1d5db; /* bg-gray-300 */
+            color: #1f2937; /* text-gray-800 */
+        }
+        .modal-close-button:hover {
+            background-color: #9ca3af; /* hover:bg-gray-400 */
+        }
+
+        /* AdSense Placeholder */
+        .adsense-placeholder {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            color: #4b5563; /* text-gray-600 */
+            font-size: 0.875rem; /* text-sm */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden { display: none !important; }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            70% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .animation-delay-0 { animation-delay: 0s; } /* Added for clarity */
+        .animation-delay-100 { animation-delay: 0.1s; }
+        .animation-delay-200 { animation-delay: 0.2s; }
+        .animation-delay-300 { animation-delay: 0.3s; }
+
+        @keyframes pulse {
+            0%, 100% { border-color: #3b82f6; } /* blue-500 */
+            50% { border-color: #a78bfa; } /* purple-400 */
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="title-gradient">SpeedType Pro</span>
+        </h1>
+
+        <!-- Customization Options -->
+        <div class="customization-options">
+            <!-- Mode Selection -->
+            <div class="option-group">
+                <label for="modeSelect" class="option-label">Mode:</label>
+                <div class="option-buttons">
+                    <button id="modeParagraph" class="option-button active">
+                        Paragraph
+                    </button>
+                    <button id="modeSentence" class="option-button">
+                        Sentence
+                    </button>
+                </div>
+            </div>
+
+            <!-- Time Selection -->
+            <div class="option-group">
+                <label for="timeSelect" class="option-label">Time:</label>
+                <div class="option-buttons">
+                    <button id="time30s" class="option-button active">
+                        30s
+                    </button>
+                    <button id="time60s" class="option-button">
+                        60s
+                    </button>
+                    <button id="time120s" class="option-button">
+                        120s
+                    </button>
+                </div>
+            </div>
+
+            <!-- Difficulty Selection -->
+            <div class="option-group">
+                <label for="difficultySelect" class="option-label">Difficulty:</label>
+                <div class="option-buttons">
+                    <button id="difficultyEasy" class="option-button active">
+                        Easy
+                    </button>
+                    <button id="difficultyMedium" class="option-button">
+                        Medium
+                    </button>
+                    <button id="difficultyHard" class="option-button">
+                        Hard
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate New Text Button -->
+        <div class="generate-text-section">
+            <button id="generateTextBtn" class="generate-text-button">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                Generate New Text
+            </button>
+            <div id="loadingIndicator" class="loading-indicator hidden">
+                <div class="spinner"></div>
+                Generating text...
+            </div>
+        </div>
+
+        <!-- Typing Area -->
+        <div class="typing-area-container">
+            <p id="textToTypeDisplay" class="text-display"></p>
+            <input type="text" id="typingInput" class="typing-input" autofocus disabled>
+        </div>
+
+        <!-- Controls and Stats -->
+        <div class="controls-stats">
+            <div class="text-3xl font-bold text-gray-800 flex items-center">
+                <svg class="w-8 h-8 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l3 3a1 1 0 001.414-1.414L11 9.586V6z" clip-rule="evenodd"></path></svg>
+                Time: <span id="timerDisplay" class="timer-value">0s</span>
+            </div>
+            <button id="restartTest" class="restart-button">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004 10.59V10m5 0h.582m-1.562 4.42A8.001 8.001 0 0020 13.41V14m-5 0h.582"></path></svg>
+                Restart Test
+            </button>
+        </div>
+
+        <!-- Results Display -->
+        <div id="resultsDisplay" class="results-section hidden">
+            <h2 class="results-title">Test Complete!</h2>
+            <div class="results-grid">
+                <div class="result-item animation-delay-0">
+                    <span id="wpmResult" class="result-value result-wpm">0</span>
+                    <span class="result-label">WPM</span>
+                </div>
+                <div class="result-item animation-delay-100">
+                    <span id="wpsResult" class="result-value result-wps">0.00</span>
+                    <span class="result-label">WPS</span>
+                </div>
+                <div class="result-item animation-delay-200">
+                    <span id="accuracyResult" class="result-value result-accuracy">0%</span>
+                    <span class="result-label">Accuracy</span>
+                </div>
+                <div class="result-item animation-delay-300">
+                    <span id="errorsResult" class="result-value result-errors">0</span>
+                    <span class="result-label">Errors</span>
+                </div>
+            </div>
+            <div class="share-button-container">
+                <button id="shareResults" class="share-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-6 h-6 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6A3 3 0 119 12a3 3 0 01-3 3m0 0l6.632-3.316m-2.804 3.96l-.984 2.152A2.999 2.999 0 0014 20c1.657 0 3-1.343 3-3V7c0-1.657-1.343-3-3-3s-3 1.343-3 3v10c0 1.657 1.343 3 3 3z"></path></svg>
+                    Share Results / Graph
+                </button>
+            </div>
+
+            <!-- Speed Graph Section -->
+            <div class="graph-section">
+                <h3 class="graph-title">Typing Speed Per Second (WPM)</h3>
+                <div class="graph-type-buttons">
+                    <button id="graphTypeLine" class="graph-type-button active" data-graph-type="line">Line</button>
+                    <button id="graphTypeDot" class="graph-type-button" data-graph-type="dot">Dot</button>
+                    <button id="graphTypeBar" class="graph-type-button" data-graph-type="bar">Bar</button>
+                    <button id="graphTypeArea" class="graph-type-button" data-graph-type="area">Area</button>
+                </div>
+                <canvas id="speedGraphCanvas" width="600" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal (for overall results and graph options) -->
+    <div id="shareModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">Share Your Results!</h3>
+            <p id="shareMessageDisplay" class="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="copyShareLink" class="modal-button modal-copy-link-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"></path></svg>
+                    Copy Share Link
+                </button>
+                <button id="downloadGraphImage" class="modal-button modal-download-image-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path></svg>
+                    Download Graph (PNG)
+                </button>
+                <button id="closeShareModal" class="modal-button modal-close-button">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google AdSense Placeholder -->
+    <div class="adsense-placeholder">
+        <!--
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_AD_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        -->
+        <p>Advertisement Area (Integrate Google AdSense or other ad platforms here)</p>
+    </div>
+
+    <script>
+        // --- Manual Content Data ---
+        const ALL_TYPING_PARAGRAPHS = [
+            "The ancient oak stood tall on the hill, its branches reaching towards the sky like gnarled fingers. Generations had passed beneath its shade, and countless stories were whispered among its leaves. A lone traveler paused, gazing at its timeless beauty, feeling a sense of peace settle over them.",
+            "In a bustling city, a small cafe offered a quiet escape. The aroma of freshly brewed coffee mingled with the scent of old books. People from all walks of life found solace here, sharing laughter and hushed conversations, each lost in their own world yet connected by the shared space.",
+            "The deep blue ocean stretched endlessly, hiding mysteries beneath its surface. Schools of colorful fish darted through coral reefs, while larger creatures patrolling the depths. A gentle current pulled a message in a bottle towards an unknown shore, carrying hopes and dreams across the vast expanse.",
+            "A scientist meticulously worked in their lab, surrounded by beakers and complex machinery. The pursuit of knowledge was their driving force, pushing them to unravel the secrets of the universe, one experiment at a time. Every discovery, no matter how small, brought them closer to understanding.",
+            "The old lighthouse stood sentinel on the rocky coast, its beam cutting through the inky blackness of the night. It had guided countless ships safely to harbor, a beacon of hope against the treacherous waves. Its solitary vigil was a testament to endurance and unwavering purpose.",
+            "The digital realm is a vast and ever-expanding landscape, constantly evolving with new technologies and innovations. From artificial intelligence to virtual reality, the possibilities seem limitless. Navigating this intricate web requires adaptability and a willingness to embrace continuous learning.",
+            "Through the dense forest, sunlight dappled the mossy ground, illuminating hidden pathways. The air was crisp with the scent of pine and damp earth. A chorus of birdsong filled the canopy, creating a symphony of nature that soothed the soul and invited quiet contemplation.",
+            "Cooking is an art form that blends creativity with precision. Each ingredient plays a vital role, contributing to the overall flavor and texture of a dish. The process from raw components to a delicious meal is a journey of transformation, culminating in a delightful sensory experience.",
+            "Exploring new cultures offers a unique perspective on the world. Language, customs, and traditions vary widely across the globe, each reflecting a rich history and unique way of life. Immersing oneself in these differences fosters understanding and broadens one's horizons.",
+            "The universe is an awe-inspiring tapestry of stars, planets, and galaxies, stretching beyond our comprehension. Astronomers tirelessly observe celestial phenomena, unraveling the cosmic mysteries that have captivated humanity for millennia. Every discovery brings us closer to understanding our place in the grand design.",
+            "The old bookstore smelled of paper and forgotten tales. Dust motes danced in the sunlight filtering through the tall windows, illuminating rows upon rows of literary treasures. Each spine held a different world, waiting to be discovered by a curious reader.",
+            "A gentle rain began to fall, tapping softly on the rooftop. The world outside transformed into a blurred watercolor, and the air grew cool and fresh. It was the perfect moment for a warm cup of tea and quiet reflection by the window.",
+            "The distant mountains stood majestic, their peaks shrouded in a soft mist. As the sun rose, golden light touched the highest points, slowly revealing the rugged beauty of the landscape. It was a sight that inspired awe and a sense of timelessness.",
+            "Innovation often springs from unexpected places. A simple idea, nurtured with persistence and creativity, can blossom into something revolutionary. The journey from concept to reality is filled with challenges, but the potential for impact makes it worthwhile.",
+            "The ancient forest whispered secrets through its rustling leaves. Old trees, centuries old, formed a living cathedral, their roots intertwined deep beneath the earth. Wildlife moved silently among the undergrowth, a vibrant ecosystem thriving in harmony.",
+            "In the quiet of the evening, the city lights began to twinkle. Each glow represented a life, a story, a dream unfolding beneath the vast sky. From a high vantage point, the urban sprawl looked like a glittering constellation on the dark ground.",
+            "The art of storytelling has been central to human culture for millennia. From ancient myths to modern novels, narratives connect us, teach us, and entertain us. A well-told story can transport listeners to different times and places, sparking imagination.",
+            "Learning a new skill requires patience and dedication. There will be moments of frustration and doubt, but consistent practice leads to gradual improvement. The satisfaction of mastering something new is a reward that truly motivates continued effort.",
+            "The river flowed calmly towards the sea, reflecting the changing colors of the sky. Along its banks, diverse flora and fauna thrived, sustained by its life-giving waters. It. was a constant journey, mirroring the passage of time and the cycles of nature.",
+            "A small, independent coffee shop became a hub for the community. Locals gathered there daily, sharing news, laughter, and ideas over their favorite brews. It. was more than just a place for coffee; it was a warm, welcoming space where connections were forged."
+        ];
+
+        const ALL_TYPING_SENTENCES = [
+            "The cat sat on the mat.",
+            "Birds sing in the morning.",
+            "Water boils at 100 degrees Celsius.",
+            "The quick brown fox jumps over the lazy dog.",
+            "She loves to read fantasy novels.",
+            "He rode his bike to the park.",
+            "The sun sets in the west.",
+            "Always be kind to others.",
+            "Learning new things is fun.",
+            "The moon shines brightly tonight.",
+            "Technology continues to advance rapidly.",
+            "Reading improves vocabulary and comprehension.",
+            "Exercise regularly for good health.",
+            "The ocean is home to diverse marine life.",
+            "Innovation drives progress in society.",
+            "Kindness can change the world.",
+            "A journey of a thousand miles begins with a single step.",
+            "The mountains offer breathtaking views.",
+            "Music has the power to heal.",
+            "Never stop exploring and discovering.",
+            "The stars shone brightly tonight.",
+            "She walked quickly to the store.",
+            "He learned to play the guitar.",
+            "The dog barked at the squirrel.",
+            "Please close the door quietly.",
+            "The book was quite interesting.",
+            "They visited the museum yesterday.",
+            "Birds build nests in the trees.",
+            "Water is essential for life.",
+            "The train arrived on time.",
+            "He enjoys painting landscapes.",
+            "She wore a beautiful dress.",
+            "The wind rustled through the leaves.",
+            "Computers process information rapidly.",
+            "Reading expands your horizons.",
+            "The chef prepared a delicious meal.",
+            "Always be honest and fair.",
+            "The moon controls the ocean tides.",
+            "Exercise keeps you healthy and fit.",
+            "The concert was a great success.",
+            "He solved the complex puzzle.",
+            "She writes poetry in her free time.",
+            "The cat chased a butterfly.",
+            "The city never truly sleeps.",
+            "Learning a language takes practice.",
+            "The garden bloomed with vibrant colors.",
+            "He fixed the broken bicycle chain.",
+            "She dreams of traveling the world.",
+            "The river flows towards the delta.",
+            "Technology simplifies daily tasks.",
+            "Kindness is a universal language.",
+            "The sun provides light and warmth.",
+            "They built a sandcastle on the beach.",
+            "The artist used bold brush strokes.",
+            "The old clock chimed precisely.",
+            "He enjoys hiking in the mountains.",
+            "She baked a fresh loaf of bread.",
+            "The news report was very informative.",
+            "The team worked together efficiently.",
+            "The bridge spanned the wide river.",
+            "He taught himself to code online.",
+            "She sings beautifully in the choir.",
+            "The quiet library was peaceful.",
+            "The storm passed quickly overnight.",
+            "He planted seeds in the spring.",
+            "She knitted a warm woolen scarf.",
+            "The ancient ruins told a story.",
+            "He captured the moment with his camera.",
+            "The smell of fresh rain filled the air.",
+            "Always strive for continuous improvement."
+        ];
+
+        // Categorize content by length for difficulty
+        const PARAGRAPH_POOL_EASY = ALL_TYPING_PARAGRAPHS.filter(p => p.length <= 200);
+        const PARAGRAPH_POOL_MEDIUM = ALL_TYPING_PARAGRAPHS.filter(p => p.length > 200 && p.length <= 400);
+        const PARAGRAPH_POOL_HARD = ALL_TYPING_PARAGRAPHS.filter(p => p.length > 400);
+
+        const SENTENCE_POOL_EASY = ALL_TYPING_SENTENCES.filter(s => s.split(' ').length <= 5);
+        const SENTENCE_POOL_MEDIUM = ALL_TYPING_SENTENCES.filter(s => s.split(' ').length > 5 && s.split(' ').length <= 10);
+        const SENTENCE_POOL_HARD = ALL_TYPING_SENTENCES.filter(s => s.split(' ').length > 10);
+
+
+        // --- Global State Variables ---
+        let textToType = '';
+        let typedText = '';
+        let timer = 0;
+        let isRunning = false;
+        let errors = 0;
+        let isTestComplete = false;
+        let wpm = 0;
+        let wps = 0;
+        let accuracy = 100;
+        let currentMode = 'paragraph'; // 'paragraph', 'sentence'
+        let selectedTime = 30; // Default time in seconds
+        let selectedDifficulty = 'easy'; // 'easy', 'medium', 'hard'
+        let timerInterval = null;
+        let correctCharsAtSecond = []; // Stores total correct chars at each second mark
+        let currentGraphType = 'line'; // Default graph type
+
+        // --- DOM Elements ---
+        const textToTypeDisplay = document.getElementById('textToTypeDisplay');
+        const typingInput = document.getElementById('typingInput');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const resultsDisplay = document.getElementById('resultsDisplay');
+        const wpmResult = document.getElementById('wpmResult');
+        const wpsResult = document.getElementById('wpsResult');
+        const accuracyResult = document.getElementById('accuracyResult');
+        const errorsResult = document.getElementById('errorsResult');
+        const shareMessageDisplay = document.getElementById('shareMessageDisplay');
+        const shareModal = document.getElementById('shareModal');
+
+        const speedGraphCanvas = document.getElementById('speedGraphCanvas');
+        const graphCtx = speedGraphCanvas.getContext('2d');
+
+        // --- Buttons ---
+        const modeParagraphBtn = document.getElementById('modeParagraph');
+        const modeSentenceBtn = document.getElementById('modeSentence');
+
+        const time30sBtn = document.getElementById('time30s');
+        const time60sBtn = document.getElementById('time60s');
+        const time120sBtn = document.getElementById('time120s');
+
+        const difficultyEasyBtn = document.getElementById('difficultyEasy');
+        const difficultyMediumBtn = document.getElementById('difficultyMedium');
+        const difficultyHardBtn = document.getElementById('difficultyHard');
+
+        const restartTestBtn = document.getElementById('restartTest');
+        const generateTextBtn = document.getElementById('generateTextBtn');
+        const shareResultsBtn = document.getElementById('shareResults'); // Main share button
+        const copyShareLinkBtn = document.getElementById('copyShareLink'); // Sub-button in modal
+        const downloadGraphImageBtn = document.getElementById('downloadGraphImage'); // Sub-button in modal
+        const closeShareModalBtn = document.getElementById('closeShareModal');
+
+        const graphTypeLineBtn = document.getElementById('graphTypeLine');
+        const graphTypeDotBtn = document.getElementById('graphTypeDot');
+        const graphTypeBarBtn = document.getElementById('graphTypeBar');
+        const graphTypeAreaBtn = document.getElementById('graphTypeArea');
+
+
+        // --- Utility Functions ---
+
+        /**
+         * Returns a random item from a given array.
+         * @param {Array} arr - The array to pick from.
+         * @returns {*} A random element from the array.
+         */
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        /**
+         * Selects text based on current mode and difficulty.
+         */
+        function selectTextForTyping() {
+            let textPool;
+            if (currentMode === 'paragraph') {
+                if (selectedDifficulty === 'easy') {
+                    textPool = PARAGRAPH_POOL_EASY;
+                } else if (selectedDifficulty === 'medium') {
+                    textPool = PARAGRAPH_POOL_MEDIUM;
+                } else { // hard
+                    textPool = PARAGRAPH_POOL_HARD;
+                }
+            } else { // sentence mode
+                if (selectedDifficulty === 'easy') {
+                    textPool = SENTENCE_POOL_EASY;
+                } else if (selectedDifficulty === 'medium') {
+                    textPool = SENTENCE_POOL_MEDIUM;
+                } else { // hard
+                    textPool = SENTENCE_POOL_HARD;
+                }
+            }
+
+            // Fallback if a specific difficulty/mode pool is empty
+            if (textPool.length === 0) {
+                console.warn(`No content found for mode: ${currentMode}, difficulty: ${selectedDifficulty}. Falling back to all paragraphs.`);
+                textPool = ALL_TYPING_PARAGRAPHS; // Default to all paragraphs if specific pool is empty
+            }
+            textToType = getRandomItem(textPool);
+        }
+
+        /**
+         * Initializes or resets the typing test.
+         * Clears previous state, selects new text, and prepares the UI.
+         */
+        function initializeTest() {
+            typedText = '';
+            timer = 0;
+            isRunning = false;
+            errors = 0;
+            isTestComplete = false;
+            wpm = 0;
+            wps = 0;
+            accuracy = 100;
+            correctCharsAtSecond = []; // Reset speed data for graph
+
+            // Clear any active timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            // Select new text based on current mode and difficulty
+            selectTextForTyping();
+
+            // Update UI elements
+            renderText();
+            typingInput.value = '';
+            typingInput.disabled = false;
+            timerDisplay.textContent = '0s';
+            resultsDisplay.classList.add('hidden'); // Hide results section
+            typingInput.focus(); // Ensure input is focused for immediate typing
+            drawGraph(currentGraphType); // Draw initial empty graph or reset graph
+        }
+
+        /**
+         * Starts the test timer.
+         */
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    timer++;
+                    timerDisplay.textContent = `${timer}s`;
+
+                    // Record correct characters at this second
+                    let currentCorrectChars = 0;
+                    for (let i = 0; i < typedText.length; i++) {
+                        if (typedText[i] === textToType[i]) {
+                            currentCorrectChars++;
+                        }
+                    }
+                    correctCharsAtSecond[timer - 1] = currentCorrectChars; // Store for graph
+
+                    // End test if selected time limit is reached
+                    if (timer >= selectedTime) {
+                        endTest();
+                    }
+                }, 1000);
+            }
+        }
+
+        /**
+         * Handles user input from the typing field.
+         * Starts the timer, updates typed text, calculates real-time errors, and checks for test completion.
+         * @param {Event} event - The input event object.
+         */
+        function handleTyping(event) {
+            if (isTestComplete) { // Prevent typing if test is already complete
+                event.preventDefault();
+                return;
+            }
+
+            const value = event.target.value;
+
+            // Start timer on the very first character typed
+            if (!isRunning && value.length > 0) {
+                startTimer();
+            }
+
+            typedText = value;
+
+            // Calculate errors in real-time
+            let currentErrors = 0;
+            for (let i = 0; i < value.length; i++) {
+                if (value[i] !== textToType[i]) {
+                    currentErrors++;
+                }
+            }
+            errors = currentErrors; // Update global errors count
+
+            renderText(); // Re-render the text display with color feedback
+
+            // Check if test is complete (all characters typed)
+            if (value.length === textToType.length) {
+                endTest();
+            }
+        }
+
+        /**
+         * Ends the typing test.
+         * Stops the timer, disables input, calculates and displays final results.
+         */
+        function endTest() {
+            isRunning = false;
+            isTestComplete = true;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            typingInput.disabled = true; // Disable input field
+
+            calculateResults();
+            displayResults();
+            drawGraph(currentGraphType); // Draw the graph when test ends
+        }
+
+        /**
+         * Calculates Words Per Minute (WPM), Words Per Second (WPS), and Accuracy.
+         */
+        function calculateResults() {
+            if (timer === 0) return; // Avoid division by zero
+
+            const correctCharacters = typedText.split('').filter((char, index) => char === textToType[index]).length;
+
+            // WPM: (number of correct characters / 5) / minutes
+            wpm = Math.round((correctCharacters / 5) / (timer / 60));
+
+            // WPS: number of correct characters / seconds
+            wps = (correctCharacters / timer).toFixed(2);
+
+            // Accuracy: (correct characters / total characters typed) * 100
+            // If nothing typed, accuracy is 100% (or can be 0 depending on desired logic)
+            accuracy = typedText.length > 0 ? ((correctCharacters / typedText.length) * 100).toFixed(2) : 100;
+        }
+
+        /**
+         * Updates the UI to display the final test results.
+         */
+        function displayResults() {
+            wpmResult.textContent = wpm;
+            wpsResult.textContent = wps;
+            accuracyResult.textContent = `${accuracy}%`;
+            errorsResult.textContent = errors;
+            resultsDisplay.classList.remove('hidden'); // Show the results section
+        }
+
+        /**
+         * Renders the `textToType` in the display area with color-coding
+         * for correct/incorrect characters and a pulsating cursor.
+         */
+        function renderText() {
+            let html = '';
+            for (let i = 0; i < textToType.length; i++) {
+                let char = textToType[i];
+                let colorClass = '';
+
+                if (i < typedText.length) {
+                    // Character has been typed
+                    colorClass = (char === typedText[i]) ? 'char-correct' : 'char-incorrect';
+                }
+
+                // Add pulsating cursor at the current typing position
+                if (i === typedText.length && !isTestComplete) {
+                    colorClass += ' char-cursor';
+                }
+
+                html += `<span class="${colorClass}">${char}</span>`;
+            }
+            textToTypeDisplay.innerHTML = html;
+        }
+
+        /**
+         * Draws the typing speed graph on the canvas based on the selected type.
+         * @param {string} type - The type of graph to draw ('line', 'dot', 'bar', 'area').
+         */
+        function drawGraph(type) {
+            const canvas = speedGraphCanvas;
+            const ctx = graphCtx;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 40; // Padding for axes and labels
+
+            ctx.clearRect(0, 0, width, height); // Clear previous drawings
+
+            // Calculate WPM per second
+            const wpmPerSecond = [];
+            for (let i = 0; i < timer; i++) {
+                const charsThisSecond = correctCharsAtSecond[i] - (i > 0 ? correctCharsAtSecond[i - 1] : 0);
+                wpmPerSecond.push(Math.round((charsThisSecond / 5) * 60));
+            }
+
+            // If no data (test not started or 0 seconds), draw a flat line at 0
+            if (wpmPerSecond.length === 0) {
+                // Draw a simple empty graph with axes
+                ctx.beginPath();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, height - padding); // Y-axis
+                ctx.lineTo(width - padding, height - padding); // X-axis
+                ctx.stroke();
+
+                ctx.font = '12px Inter';
+                ctx.fillStyle = '#555';
+                ctx.textAlign = 'center';
+                ctx.fillText('Time (seconds)', width / 2, height - 10);
+                ctx.save();
+                ctx.translate(padding - 25, height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.textAlign = 'center';
+                ctx.fillText('WPM', 0, 0);
+                ctx.restore();
+                return; // Exit as there's no data to plot
+            }
+
+            // Find max WPM for Y-axis scaling
+            const maxWPM = Math.max(...wpmPerSecond, 10); // Ensure at least 10 for better scaling
+
+            // Draw axes
+            ctx.beginPath();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding); // Y-axis
+            ctx.lineTo(width - padding, height - padding); // X-axis
+            ctx.stroke();
+
+            // Draw X-axis labels (Time in seconds)
+            ctx.font = '12px Inter';
+            ctx.fillStyle = '#555';
+            ctx.textAlign = 'center';
+            const xStep = (width - 2 * padding) / (wpmPerSecond.length - 1 || 1);
+            for (let i = 0; i < wpmPerSecond.length; i++) {
+                const x = padding + i * xStep;
+                ctx.fillText(i + 1, x, height - padding + 15);
+            }
+            ctx.fillText('Time (seconds)', width / 2, height - 10);
+
+            // Draw Y-axis labels (WPM)
+            ctx.textAlign = 'right';
+            const yStepCount = 5; // Number of Y-axis labels
+            const yInterval = Math.ceil(maxWPM / yStepCount / 10) * 10; // Round up to nearest 10 for clean intervals
+            const maxGraphWPM = yInterval * yStepCount; // Max WPM value displayed on graph
+
+            for (let i = 0; i <= yStepCount; i++) {
+                const wpmLabel = i * yInterval;
+                const y = height - padding - (wpmLabel / maxGraphWPM) * (height - 2 * padding);
+                ctx.fillText(wpmLabel, padding - 5, y + 4); // +4 for vertical alignment
+            }
+            ctx.save();
+            ctx.translate(padding - 25, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('WPM', 0, 0);
+            ctx.restore();
+
+            // Draw grid lines
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 0.5;
+            // Horizontal grid lines
+            for (let i = 0; i <= yStepCount; i++) {
+                const y = height - padding - (i * yInterval / maxGraphWPM) * (height - 2 * padding);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+            // Vertical grid lines
+            for (let i = 0; i < wpmPerSecond.length; i++) {
+                const x = padding + i * xStep;
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, height - padding);
+                ctx.stroke();
+            }
+
+            // Draw the graph based on type
+            ctx.strokeStyle = '#2563eb'; // Blue line/bar color
+            ctx.fillStyle = '#2563eb'; // Blue fill color for dots/bars
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            if (wpmPerSecond.length > 0) {
+                // Line Graph
+                if (type === 'line') {
+                    ctx.beginPath();
+                    const firstX = padding + 0 * xStep;
+                    const firstY = height - padding - (wpmPerSecond[0] / maxGraphWPM) * (height - 2 * padding);
+                    ctx.moveTo(firstX, firstY);
+
+                    for (let i = 0; i < wpmPerSecond.length; i++) {
+                        const x = padding + i * xStep;
+                        const y = height - padding - (wpmPerSecond[i] / maxGraphWPM) * (height - 2 * padding);
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+
+                // Dot Graph (Scatter Plot)
+                if (type === 'dot') {
+                    for (let i = 0; i < wpmPerSecond.length; i++) {
+                        const x = padding + i * xStep;
+                        const y = height - padding - (wpmPerSecond[i] / maxGraphWPM) * (height - 2 * padding);
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, Math.PI * 2);
+                        ctx.fillStyle = '#2563eb';
+                        ctx.fill();
+                    }
+                }
+
+                // Bar Graph
+                if (type === 'bar') {
+                    const barWidth = xStep * 0.6; // Adjust bar width
+                    for (let i = 0; i < wpmPerSecond.length; i++) {
+                        const x = padding + i * xStep - barWidth / 2;
+                        const barHeight = (wpmPerSecond[i] / maxGraphWPM) * (height - 2 * padding);
+                        const y = height - padding - barHeight;
+                        ctx.fillStyle = '#2563eb';
+                        ctx.fillRect(x, y, barWidth, barHeight);
+                    }
+                }
+
+                // Area Graph
+                if (type === 'area') {
+                    ctx.beginPath();
+                    const firstX = padding + 0 * xStep;
+                    const firstY = height - padding - (wpmPerSecond[0] / maxGraphWPM) * (height - 2 * padding);
+                    ctx.moveTo(firstX, firstY);
+
+                    for (let i = 0; i < wpmPerSecond.length; i++) {
+                        const x = padding + i * xStep;
+                        const y = height - padding - (wpmPerSecond[i] / maxGraphWPM) * (height - 2 * padding);
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.lineTo(padding + (wpmPerSecond.length - 1) * xStep, height - padding); // Bottom right
+                    ctx.lineTo(padding, height - padding); // Bottom left
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(37, 99, 235, 0.2)'; // Light blue fill
+                    ctx.fill();
+                    ctx.stroke(); // Draw the border of the area
+                }
+            }
+        }
+
+        /**
+         * Shows the share modal with options to copy link or download graph.
+         */
+        function showShareOptions() {
+            const shareText = `I typed ${wpm} WPM with ${accuracy}% accuracy in ${timer} seconds on ${currentMode} mode (Difficulty: ${selectedDifficulty})! Can you beat me? #TypingChallenge #SpeedTyping`;
+            shareMessageDisplay.textContent = shareText;
+            shareModal.classList.remove('hidden'); // Show the modal
+        }
+
+        /**
+         * Copies the share message to the user's clipboard.
+         */
+        function copyShareLink() {
+            const textToCopy = shareMessageDisplay.textContent;
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('Results link copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy results link.');
+            }
+            document.body.removeChild(textArea);
+            shareModal.classList.add('hidden'); // Hide the modal after copying
+        }
+
+        /**
+         * Downloads the current speed graph as a PNG image.
+         */
+        function downloadGraphImage() {
+            const image = speedGraphCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `typing_speed_graph_${Date.now()}.png`;
+            link.href = image;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            shareModal.classList.add('hidden'); // Hide the modal after download
+        }
+
+        /**
+         * Updates the visual state of buttons within a group (e.g., mode, time, difficulty, graph type).
+         * Adds 'active' class to the selected button and removes it from others.
+         * @param {HTMLElement[]} buttons - An array of button elements in the group.
+         * @param {string} selectedId - The ID of the currently selected button.
+         */
+        function updateButtonSelection(buttons, selectedId) {
+            buttons.forEach(btn => {
+                if (btn.id === selectedId) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTest(); // Initialize on page load
+
+            // Ensure input stays focused
+            typingInput.addEventListener('blur', () => {
+                if (!isTestComplete) { // Only refocus if the test isn't complete
+                    typingInput.focus();
+                }
+            });
+
+            typingInput.addEventListener('input', handleTyping);
+            typingInput.addEventListener('keydown', (event) => {
+                // Prevent spacebar from scrolling the page if it's not the expected character
+                if (event.key === ' ' && typedText.length < textToType.length && typingInput.value[typedText.length] !== ' ') {
+                    event.preventDefault();
+                }
+            });
+
+
+            restartTestBtn.addEventListener('click', initializeTest);
+            generateTextBtn.addEventListener('click', initializeTest); // Re-initializes with new text selection
+            shareResultsBtn.addEventListener('click', showShareOptions); // Main share button now shows options modal
+            copyShareLinkBtn.addEventListener('click', copyShareLink); // Sub-button
+            downloadGraphImageBtn.addEventListener('click', downloadGraphImage); // Sub-button
+            closeShareModalBtn.addEventListener('click', () => {
+                shareModal.classList.add('hidden');
+            });
+
+            // Mode selection event listeners
+            modeParagraphBtn.addEventListener('click', () => {
+                currentMode = 'paragraph';
+                updateButtonSelection([modeParagraphBtn, modeSentenceBtn], 'modeParagraph');
+                initializeTest();
+            });
+            modeSentenceBtn.addEventListener('click', () => {
+                currentMode = 'sentence';
+                updateButtonSelection([modeParagraphBtn, modeSentenceBtn], 'modeSentence');
+                initializeTest();
+            });
+
+            // Time selection event listeners
+            time30sBtn.addEventListener('click', () => {
+                selectedTime = 30;
+                updateButtonSelection([time30sBtn, time60sBtn, time120sBtn], 'time30s');
+                initializeTest();
+            });
+            time60sBtn.addEventListener('click', () => {
+                selectedTime = 60;
+                updateButtonSelection([time30sBtn, time60sBtn, time120sBtn], 'time60s');
+                initializeTest();
+            });
+            time120sBtn.addEventListener('click', () => {
+                selectedTime = 120;
+                updateButtonSelection([time30sBtn, time60sBtn, time120sBtn], 'time120s');
+                initializeTest();
+            });
+
+            // Difficulty selection event listeners
+            difficultyEasyBtn.addEventListener('click', () => {
+                selectedDifficulty = 'easy';
+                updateButtonSelection([difficultyEasyBtn, difficultyMediumBtn, difficultyHardBtn], 'difficultyEasy');
+                initializeTest();
+            });
+            difficultyMediumBtn.addEventListener('click', () => {
+                selectedDifficulty = 'medium';
+                updateButtonSelection([difficultyEasyBtn, difficultyMediumBtn, difficultyHardBtn], 'difficultyMedium');
+                initializeTest();
+            });
+            difficultyHardBtn.addEventListener('click', () => {
+                selectedDifficulty = 'hard';
+                updateButtonSelection([difficultyEasyBtn, difficultyMediumBtn, difficultyHardBtn], 'difficultyHard');
+                initializeTest();
+            });
+
+            // Graph type selection event listeners
+            graphTypeLineBtn.addEventListener('click', () => {
+                currentGraphType = 'line';
+                updateButtonSelection([graphTypeLineBtn, graphTypeDotBtn, graphTypeBarBtn, graphTypeAreaBtn], 'graphTypeLine');
+                if (isTestComplete) drawGraph(currentGraphType);
+            });
+            graphTypeDotBtn.addEventListener('click', () => {
+                currentGraphType = 'dot';
+                updateButtonSelection([graphTypeLineBtn, graphTypeDotBtn, graphTypeBarBtn, graphTypeAreaBtn], 'graphTypeDot');
+                if (isTestComplete) drawGraph(currentGraphType);
+            });
+            graphTypeBarBtn.addEventListener('click', () => {
+                currentGraphType = 'bar';
+                updateButtonSelection([graphTypeLineBtn, graphTypeDotBtn, graphTypeBarBtn, graphTypeAreaBtn], 'graphTypeBar');
+                if (isTestComplete) drawGraph(currentGraphType);
+            });
+            graphTypeAreaBtn.addEventListener('click', () => {
+                currentGraphType = 'area';
+                updateButtonSelection([graphTypeLineBtn, graphTypeDotBtn, graphTypeBarBtn, graphTypeAreaBtn], 'graphTypeArea');
+                if (isTestComplete) drawGraph(currentGraphType);
+            });
+
+            // Set initial button states
+            updateButtonSelection([modeParagraphBtn, modeSentenceBtn], `mode${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)}`);
+            updateButtonSelection([time30sBtn, time60sBtn, time120sBtn], `time${selectedTime}s`);
+            updateButtonSelection([difficultyEasyBtn, difficultyMediumBtn, difficultyHardBtn], `difficulty${selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1)}`);
+            updateButtonSelection([graphTypeLineBtn, graphTypeDotBtn, graphTypeBarBtn, graphTypeAreaBtn], `graphType${currentGraphType.charAt(0).toUpperCase() + currentGraphType.slice(1)}`);
+        });
+    </script>
+</body>
+</html>

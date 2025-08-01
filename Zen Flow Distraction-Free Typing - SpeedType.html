@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen Flow: Distraction-Free Typing - SpeedType Pro</title>
+    <meta name="description" content="Experience Zen Flow typing: a minimalist, distraction-free environment for improving typing rhythm and accuracy. Text fades smoothly as you complete it.">
+    <meta name="keywords" content="typing, zen typing, flow typing, distraction-free, minimalist, typing practice, wpm, speed typing, online typing, calm typing">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles - Consistent with previous apps */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin: 0;
+            color: #1f2937; /* Default text color */
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Main Container - Consistent with previous apps */
+        .container {
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            padding: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+        }
+        .container:hover {
+            transform: scale(1.005);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* hover:shadow-2xl */
+        }
+
+        /* Heading - Consistent with previous apps */
+        .title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            text-align: center;
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em; /* tracking-tight */
+        }
+        .title-gradient {
+            background-image: linear-gradient(to right, #2563eb, #9333ea); /* from-blue-600 to-purple-600 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback */
+        }
+
+        /* Typing Area */
+        .typing-area-container {
+            background-color: #f9fafb; /* bg-gray-50 */
+            padding: 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            margin-bottom: 1.5rem;
+            min-height: 12rem; /* Sufficient height for paragraphs */
+            display: flex;
+            flex-direction: column; /* Stack lines */
+            justify-content: center; /* Vertically center content */
+            align-items: center; /* Horizontally center lines */
+            font-size: 1.25rem; /* Standard text size for paragraphs */
+            line-height: 1.6;
+            position: relative;
+            text-align: left; /* Text aligns left within its own block */
+        }
+
+        .text-display {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* font-mono */
+            color: #374151; /* text-gray-700 */
+            width: 100%; /* Take full width of container */
+            max-width: 800px; /* Limit line length for readability */
+            display: block; /* Ensure it's a block element for wrapping */
+            margin: 0 auto; /* Center the block */
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* For fade out animation */
+        }
+
+        .text-display.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .typing-input {
+            position: absolute;
+            bottom: 1.5rem; /* Position below the text display */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%; /* Adjust width as needed */
+            max-width: 600px;
+            padding: 0.75rem 1rem;
+            font-size: 1.25rem;
+            text-align: center;
+            border: 2px solid #2563eb; /* Blue border */
+            border-radius: 0.5rem;
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            background-color: #fff;
+            color: #1f2937;
+        }
+        .typing-input:focus {
+            border-color: #9333ea; /* Purple on focus */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Correct/Incorrect Character Colors */
+        .char-correct {
+            color: #16a34a; /* Green for correctly typed characters */
+        }
+        .char-incorrect {
+            color: #dc2626; /* Red for incorrectly typed characters */
+            /* We let incorrect characters appear but don't advance the cursor */
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .control-button {
+            padding: 0.8rem 2rem;
+            background-image: linear-gradient(to right, #2563eb, #9333ea);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .control-button:hover {
+            box-shadow: 0 8px 10px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* AdSense Placeholder - Consistent with previous apps */
+        .adsense-placeholder {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            color: #4b5563; /* text-gray-600 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="title-gradient">Zen Flow: Distraction-Free Typing</span>
+        </h1>
+
+        <div id="typing-area-container" class="typing-area-container">
+            <p id="textToTypeDisplay" class="text-display"></p>
+            <input type="text" id="typingInput" class="typing-input" autofocus disabled placeholder="Start typing here...">
+        </div>
+
+        <div class="controls">
+            <button id="startButton" class="control-button">Start Zen Flow</button>
+            <button id="resetButton" class="control-button">New Text</button>
+            <button id="backToHomeButton" class="control-button">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Google AdSense Placeholder - Consistent with previous apps -->
+    <div class="adsense-placeholder">
+        <!--
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_AD_SLOT_ID"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        -->
+        <p>Advertisement Area (Integrate Google AdSense or other ad platforms here)</p>
+    </div>
+
+    <script>
+        // --- Manual Content Data (reusing paragraphs from previous apps) ---
+        const ALL_TYPING_PARAGRAPHS = [
+            "The ancient oak stood tall on the hill, its branches reaching towards the sky like gnarled fingers. Generations had passed beneath its shade, and countless stories were whispered among its leaves. A lone traveler paused, gazing at its timeless beauty, feeling a sense of peace settle over them.",
+            "In a bustling city, a small cafe offered a quiet escape. The aroma of freshly brewed coffee mingled with the scent of old books. People from all walks of life found solace here, sharing laughter and hushed conversations, each lost in their own world yet connected by the shared space.",
+            "The deep blue ocean stretched endlessly, hiding mysteries beneath its surface. Schools of colorful fish darted through coral reefs, while larger creatures patrolling the depths. A gentle current pulled a message in a bottle towards an unknown shore, carrying hopes and dreams across the vast expanse.",
+            "A scientist meticulously worked in their lab, surrounded by beakers and complex machinery. The pursuit of knowledge was their driving force, pushing them to unravel the secrets of the universe, one experiment at a time. Every discovery, no matter how small, brought them closer to understanding.",
+            "The old lighthouse stood sentinel on the rocky coast, its beam cutting through the inky blackness of the night. It had guided countless ships safely to harbor, a beacon of hope against the treacherous waves. Its solitary vigil was a testament to endurance and unwavering purpose.",
+            "The digital realm is a vast and ever-expanding landscape, constantly evolving with new technologies and innovations. From artificial intelligence to virtual reality, the possibilities seem limitless. Navigating this intricate web requires adaptability and a willingness to embrace continuous learning.",
+            "Through the dense forest, sunlight dappled the mossy ground, illuminating hidden pathways. The air was crisp with the scent of pine and damp earth. A chorus of birdsong filled the canopy, creating a symphony of nature that soothed the soul and invited quiet contemplation.",
+            "Cooking is an art form that blends creativity with precision. Each ingredient plays a vital role, contributing to the overall flavor and texture of a dish. The process from raw components to a delicious meal is a journey of transformation, culminating in a delightful sensory experience.",
+            "Exploring new cultures offers a unique perspective on the world. Language, customs, and traditions vary widely across the globe, each reflecting a rich history and unique way of life. Immersing oneself in these differences fosters understanding and broadens one's horizons.",
+            "The universe is an awe-inspiring tapestry of stars, planets, and galaxies, stretching beyond our comprehension. Astronomers tirelessly observe celestial phenomena, unraveling the cosmic mysteries that have captivated humanity for millennia. Every discovery brings us closer to understanding our place in the grand design.",
+            "The old bookstore smelled of paper and forgotten tales. Dust motes danced in the sunlight filtering through the tall windows, illuminating rows upon rows of literary treasures. Each spine held a different world, waiting to be discovered by a curious reader.",
+            "A gentle rain began to fall, tapping softly on the rooftop. The world outside transformed into a blurred watercolor, and the air grew cool and fresh. It was the perfect moment for a warm cup of tea and quiet reflection by the window.",
+            "The distant mountains stood majestic, their peaks shrouded in a soft mist. As the sun rose, golden light touched the highest points, slowly revealing the rugged beauty of the landscape. It was a sight that inspired awe and a sense of timelessness.",
+            "Innovation often springs from unexpected places. A simple idea, nurtured with persistence and creativity, can blossom into something revolutionary. The journey from concept to reality is filled with challenges, but the potential for impact makes it worthwhile.",
+            "The ancient forest whispered secrets through its rustling leaves. Old trees, centuries old, formed a living cathedral, their roots intertwined deep beneath the earth. Wildlife moved silently among the undergrowth, a vibrant ecosystem thriving in harmony.",
+            "In the quiet of the evening, the city lights began to twinkle. Each glow represented a life, a story, a dream unfolding beneath the vast sky. From a high vantage point, the urban sprawl looked like a glittering constellation on the dark ground.",
+            "The art of storytelling has been central to human culture for millennia. From ancient myths to modern novels, narratives connect us, teach us, and entertain us. A well-told story can transport listeners to different times and places, sparking imagination.",
+            "Learning a new skill requires patience and dedication. There will be moments of frustration and doubt, but consistent practice leads to gradual improvement. The satisfaction of mastering something new is a reward that truly motivates continued effort.",
+            "The river flowed calmly towards the sea, reflecting the changing colors of the sky. Along its banks, diverse flora and fauna thrived, sustained by its life-giving waters. It. was a constant journey, mirroring the passage of time and the cycles of nature.",
+            "A small, independent coffee shop became a hub for the community. Locals gathered there daily, sharing news, laughter, and ideas over their favorite brews. It. was more than just a place for coffee; it was a warm, welcoming space where connections were forged."
+        ];
+
+        // --- Global State Variables ---
+        let textToType = '';
+        let typedText = ''; // What the user has actually typed in the input
+        let currentCharIndex = 0; // Index of the character the user is currently on in textToType
+        let totalErrors = 0; // Total errors across typing session
+
+        // --- DOM Elements ---
+        const typingAreaContainer = document.getElementById('typing-area-container');
+        const textToTypeDisplay = document.getElementById('textToTypeDisplay');
+        const typingInput = document.getElementById('typingInput');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const backToHomeButton = document.getElementById('backToHomeButton');
+
+        // --- Game Logic ---
+        function initZenTyping() {
+            // Reset state
+            typedText = '';
+            currentCharIndex = 0;
+            totalErrors = 0;
+
+            // Select a random paragraph
+            textToType = ALL_TYPING_PARAGRAPHS[Math.floor(Math.random() * ALL_TYPING_PARAGRAPHS.length)];
+
+            typingInput.value = '';
+            typingInput.disabled = true;
+            typingInput.focus();
+
+            renderText(); // Render initial text
+            textToTypeDisplay.classList.remove('fade-out'); // Ensure text is visible
+        }
+
+        function handleTypingInput(event) {
+            if (typingInput.disabled) return;
+
+            const newInputValue = event.target.value;
+
+            // Only process if a character was added or removed
+            if (newInputValue.length > typedText.length) { // Character added
+                const typedChar = newInputValue[typedText.length]; // The newly typed character
+                const expectedChar = textToType[typedText.length]; // The character we expect
+
+                if (typedChar === expectedChar) {
+                    typedText = newInputValue; // Accept the new input
+                    currentCharIndex++;
+                } else {
+                    // Incorrect character typed.
+                    // Revert the input field's value to prevent incorrect characters from appearing.
+                    event.target.value = typedText;
+                    totalErrors++; // Increment error count for the mistake
+                }
+            } else if (newInputValue.length < typedText.length) { // Character deleted (backspace)
+                typedText = newInputValue; // Accept the new input (after backspace)
+                currentCharIndex = newInputValue.length; // Sync cursor position
+                // Recalculate errors for the entire typed string after backspace
+                // This is less critical for Zen Flow as errors aren't displayed live,
+                // but keeps internal state consistent.
+                totalErrors = 0;
+                for (let i = 0; i < currentCharIndex; i++) {
+                    if (typedText[i] !== textToType[i]) {
+                        totalErrors++;
+                    }
+                }
+            } else if (newInputValue.length === typedText.length && newInputValue !== typedText) {
+                // This case handles pasting or complex input that changes content without length change
+                // For simplicity, we'll treat it as an error and reset the input.
+                event.target.value = typedText;
+                totalErrors++;
+            }
+
+            renderText(); // Update visual feedback
+
+            // Check if paragraph is complete
+            if (currentCharIndex >= textToType.length) {
+                // Check if all characters are correct before fading out
+                let allCorrect = true;
+                for(let i = 0; i < textToType.length; i++) {
+                    if (textToType[i] !== typedText[i]) {
+                        allCorrect = false;
+                        break;
+                    }
+                }
+
+                if (allCorrect) {
+                    typingInput.disabled = true;
+                    textToTypeDisplay.classList.add('fade-out'); // Start fade out animation
+
+                    // After fade out, load new text
+                    textToTypeDisplay.addEventListener('transitionend', function handler() {
+                        textToTypeDisplay.removeEventListener('transitionend', handler);
+                        initZenTyping(); // Load a new paragraph
+                        typingInput.disabled = false; // Enable input for new text
+                        typingInput.focus();
+                    });
+                } else {
+                    // If not all correct, don't advance to next paragraph, user must correct
+                    // Optionally, could provide a hint or visual cue here.
+                    // For now, just keep input enabled until corrected.
+                }
+            }
+        }
+
+        function renderText() {
+            let html = '';
+            for (let i = 0; i < textToType.length; i++) {
+                let char = textToType[i];
+                let colorClass = '';
+
+                if (i < currentCharIndex) {
+                    // Character has been typed, check for correctness
+                    colorClass = (char === typedText[i]) ? 'char-correct' : 'char-incorrect';
+                }
+                html += `<span class="${colorClass}">${char}</span>`;
+            }
+            textToTypeDisplay.innerHTML = html;
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initZenTyping(); // Initialize on page load
+
+            // Ensure input stays focused
+            typingInput.addEventListener('blur', () => {
+                if (!typingInput.disabled) {
+                    typingInput.focus();
+                }
+            });
+
+            typingInput.addEventListener('input', handleTypingInput);
+            typingInput.addEventListener('keydown', (event) => {
+                // Prevent default behavior for spacebar to avoid page scrolling
+                if (event.key === ' ') {
+                    event.preventDefault();
+                }
+            });
+
+            startButton.addEventListener('click', () => {
+                if (typingInput.disabled) { // Only start if currently disabled (initial state or finished)
+                    initZenTyping(); // Reset and prepare for new typing
+                    typingInput.disabled = false;
+                    typingInput.focus();
+                }
+            });
+
+            resetButton.addEventListener('click', initZenTyping); // Reset/load new text
+
+            backToHomeButton.addEventListener('click', () => {
+                window.location.href = 'index.html'; // Navigate back to the landing page
+            });
+        });
+    </script>
+</body>
+</html>
