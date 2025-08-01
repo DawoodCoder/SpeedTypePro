@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeedType Pro - Your Typing Hub</title>
+    <meta name="description" content="Improve your typing speed and accuracy with SpeedType Pro. Practice with engaging tests, track your progress, and explore more typing resources.">
+    <meta name="keywords" content="typing, typing test, speed typing, wpm, typing practice, online typing, typing games, typing resources, homepage, typing tutor">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles - Consistent with main app */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin: 0;
+            color: #1f2937; /* Default text color */
+        }
+
+        /* AdSense Placeholder - Top Ad */
+        .adsense-placeholder-top {
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            color: #4b5563; /* text-gray-600 */
+            font-size: 0.875rem; /* text-sm */
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        /* Main Container - Consistent with main app */
+        .container {
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            padding: 2rem;
+            width: 100%;
+            max-width: 64rem; /* max-w-4xl */
+            text-align: center;
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+            position: relative; /* For the ad inside */
+        }
+        .container:hover {
+            transform: scale(1.005);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* hover:shadow-2xl */
+        }
+
+        /* AdSense Placeholder - In-Container Ad */
+        .adsense-placeholder-in-container {
+            margin: 2rem 0;
+            width: 100%;
+            text-align: center;
+            color: #4b5563;
+            font-size: 0.875rem;
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        /* Heading - Consistent with main app */
+        .title {
+            font-size: 2.5rem; /* Larger for landing page impact */
+            font-weight: 800; /* font-extrabold */
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em; /* tracking-tight */
+        }
+        .title-gradient {
+            background-image: linear-gradient(to right, #2563eb, #9333ea); /* from-blue-600 to-purple-600 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback */
+        }
+
+        /* Subtitle/Description */
+        .subtitle {
+            font-size: 1.25rem; /* text-xl */
+            color: #4b5563; /* text-gray-600 */
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        /* Main Call to Action Button */
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            background-image: linear-gradient(to right, #22c55e, #14b8a6); /* from-green-500 to-teal-500 */
+            color: #ffffff; /* text-white */
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-lg */
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+            text-decoration: none; /* For anchor tag */
+            margin-bottom: 3rem; /* More space below CTA */
+        }
+        .cta-button:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-xl */
+            transform: scale(1.05);
+        }
+        .cta-button svg {
+            width: 1.75rem; /* w-7 */
+            height: 1.75rem; /* h-7 */
+            margin-right: 0.75rem;
+        }
+
+        /* Other Resources Section */
+        .resources-section {
+            margin-top: 2rem;
+            border-top: 1px solid #e5e7eb; /* border-gray-200 */
+            padding-top: 2rem;
+        }
+        .resources-title {
+            font-size: 1.75rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 1.5rem;
+        }
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+            gap: 1.5rem; /* Space between buttons */
+            justify-content: center; /* Center grid items */
+            max-width: 900px; /* Limit grid width */
+            margin: 0 auto;
+        }
+
+        .resource-button {
+            background-color: #f0f4f8; /* Light background for buttons */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+            padding: 1.5rem;
+            aspect-ratio: 1 / 1; /* Forces square shape */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Pushes name to center, button to bottom */
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            background-image: linear-gradient(to bottom right, #f0f4f8, #e0e7ed); /* Subtle gradient */
+            border: 1px solid #d1d5db;
+        }
+        .resource-button:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            background-image: linear-gradient(to bottom right, #e0e7ed, #d1d5db); /* Slightly darker gradient on hover */
+        }
+
+        .resource-button h3 {
+            font-size: 1.4rem; /* Larger font for the name */
+            font-weight: 700;
+            color: #2563eb; /* Blue for the name */
+            margin: auto; /* Centers content vertically */
+            flex-grow: 1; /* Allows h3 to take available space for centering */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .go-button {
+            padding: 0.6rem 1.2rem;
+            background-image: linear-gradient(to right, #6366f1, #a855f7); /* Indigo to Purple */
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease-in-out;
+            margin-top: 0.5rem; /* Space above button */
+        }
+        .go-button:hover {
+            background-image: linear-gradient(to right, #4f46e5, #9333ea); /* Darker on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* AdSense Placeholder - Bottom Ad */
+        .adsense-placeholder-bottom {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 64rem;
+            text-align: center;
+            color: #4b5563;
+            font-size: 0.875rem;
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        /* AdSense Placeholder - Side Ads */
+        .adsense-placeholder-side {
+            position: fixed;
+            width: 160px; /* Standard skyscraper width */
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+            color: #4b5563;
+            font-size: 0.75rem;
+            background-color: #e2e8f0;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            display: none; /* Hidden by default for smaller screens */
+        }
+        .adsense-placeholder-left {
+            left: 1rem;
+        }
+        .adsense-placeholder-right {
+            right: 1rem;
+        }
+        @media (min-width: 1200px) {
+            .adsense-placeholder-side {
+                display: block;
+            }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-button:hover, .close-button:focus {
+            color: #000;
+        }
+        .modal-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .modal-text {
+            font-size: 1.125rem;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+        .modal-button {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-image: linear-gradient(to right, #2563eb, #9333ea);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        .modal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+
+        /* Basic Animations (from main app) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="adsense-placeholder adsense-placeholder-top">
+        <p>Top Ad Placement</p>
+    </div>
+
+    <div class="adsense-placeholder-side adsense-placeholder-left">
+        <p>Left Skyscraper Ad</p>
+    </div>
+
+    <div class="adsense-placeholder-side adsense-placeholder-right">
+        <p>Right Skyscraper Ad</p>
+    </div>
+
+    <div class="container animate-scale-in">
+        <h1 class="title">
+            <span class="title-gradient">Welcome to SpeedType Pro</span>
+        </h1>
+        <p class="subtitle">
+            Master your keyboard skills with our comprehensive typing tests and engaging games. Choose your challenge and start improving today!
+        </p>
+        
+        <a href="#" class="cta-button" data-modal-target="main-test-modal" data-href="SpeedTypePro.html">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-7 h-7 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-7.5M21 3v7.5"></path></svg>
+            Start Typing Test
+        </a>
+
+        <div class="adsense-placeholder-in-container">
+            <p>Inline Content Ad</p>
+        </div>
+
+        <div class="resources-section">
+            <h2 class="resources-title">Explore Other Typing Styles & Games</h2>
+            <div class="resource-grid">
+                <div class="resource-button" data-href="Focus Typing.html">
+                    <h3>Focus Typing</h3>
+                    <button class="go-button">Start</button>
+                </div>
+                <div class="resource-button" data-href="Typing Race - SpeedType Game.html">
+                    <h3>Typing Race Game</h3>
+                    <button class="go-button">Start</button>
+                </div>
+                <div class="resource-button" data-href="Zen Flow Distraction-Free Typing - SpeedType.html">
+                    <h3>Zen Flow Typing</h3>
+                    <button class="go-button">Start</button>
+                </div>
+                <div class="resource-button" data-href="Word Rush.html">
+                    <h3>Word Rush</h3>
+                    <button class="go-button">Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="adsense-placeholder adsense-placeholder-bottom">
+        <p>Bottom Ad Placement</p>
+    </div>
+
+    <div id="cta-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 class="modal-title">Ready to Boost Your Typing Speed?</h3>
+            <p class="modal-text">Click below to start your personalized typing test and track your progress!</p>
+            <a id="modal-cta-button" href="#" class="modal-button">Start Now</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('cta-modal');
+            const closeButton = modal.querySelector('.close-button');
+            const modalCtaButton = document.getElementById('modal-cta-button');
+            const resourceButtons = document.querySelectorAll('.resource-button');
+            const mainCtaButton = document.querySelector('.cta-button');
+            let targetUrl = '';
+
+            // Function to show the modal
+            function showModal(url) {
+                targetUrl = url;
+                modalCtaButton.href = targetUrl;
+                modal.style.display = 'flex';
+            }
+
+            // Function to hide the modal
+            function hideModal() {
+                modal.style.display = 'none';
+            }
+
+            // Event listener for the main CTA button
+            mainCtaButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                showModal(mainCtaButton.getAttribute('data-href'));
+            });
+
+            // Add click event listener to each resource button
+            resourceButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent default link behavior
+                    const href = button.getAttribute('data-href');
+                    if (href && href !== '#') {
+                        showModal(href);
+                    } else {
+                        // Optional: Provide feedback if link is not set
+                        console.warn('Link not set for this resource button.');
+                        // alert('This typing resource is coming soon!'); // Use a custom modal in a real app
+                    }
+                });
+            });
+
+            // Close modal when close button is clicked
+            closeButton.addEventListener('click', hideModal);
+
+            // Close modal when clicking outside the modal content
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    hideModal();
+                }
+            });
+
+            // Navigate when the modal's CTA is clicked (already handled by href)
+        });
+    </script>
+</body>
+</html>
