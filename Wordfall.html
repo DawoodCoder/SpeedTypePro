@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordfall - SpeedType Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .game-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        #game-container {
+            width: 800px;
+            height: 600px;
+            background-color: #ffffff;
+            border: 2px solid #d1d5db;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .falling-word {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            background-color: #f9fafb;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid #e5e7eb;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        #ui-container {
+            display: flex;
+            justify-content: space-between;
+            width: 800px;
+            padding: 1rem 0;
+        }
+
+        .ui-element {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .ui-element span {
+            color: #2563eb;
+        }
+
+        #typing-input {
+            width: 780px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 1.25rem;
+            border-radius: 0.5rem;
+            border: 2px solid #d1d5db;
+            transition: border-color 0.2s;
+        }
+
+        #typing-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        #game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #game-overlay h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        #start-button, #restart-button {
+            padding: 1rem 2.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-image: linear-gradient(to right, #22c55e, #14b8a6);
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #start-button:hover, #restart-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="game-title">Wordfall</h1>
+
+    <div id="ui-container">
+        <div class="ui-element">Score: <span id="score-display">0</span></div>
+        <div class="ui-element">Lives: <span id="lives-display">5</span></div>
+    </div>
+
+    <div id="game-container">
+        <div id="game-overlay">
+            <h2>Welcome to Wordfall!</h2>
+            <p style="font-size: 1.25rem; margin-bottom: 2rem;">Type the words before they hit the bottom.</p>
+            <button id="start-button">Start Game</button>
+        </div>
+        <div id="game-over-screen" class="hidden">
+            <h2>Game Over</h2>
+            <p style="font-size: 1.25rem; margin-bottom: 2rem;">Your final score is <span id="final-score">0</span>.</p>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+
+    <input type="text" id="typing-input" placeholder="Type a word and press Enter..." disabled>
+
+    <script>
+        const WORDS = [
+            "code", "fall", "jules", "agent", "quirk", "pixel", "crane", "logic", "debug", "cloud",
+            "hello", "world", "grape", "apple", "peach", "react", "style", "script", "hyper", "text",
+            "quest", "zesty", "proxy", "yacht", "waltz", "vivid", "fuzzy", "jazzy", "kayak", "axiom",
+            "blitz", "duplex", "export", "import", "matrix", "python", "javascript", "function", "variable"
+        ];
+
+        // DOM Elements
+        const gameContainer = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const livesDisplay = document.getElementById('lives-display');
+        const typingInput = document.getElementById('typing-input');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        const gameOverlay = document.getElementById('game-overlay');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const finalScore = document.getElementById('final-score');
+
+        // Game State
+        let score = 0;
+        let lives = 5;
+        let activeWords = [];
+        let gameInterval;
+        let spawnInterval;
+        let isGameRunning = false;
+        let fallSpeed = 1;
+
+        function getRandomWord() {
+            return WORDS[Math.floor(Math.random() * WORDS.length)];
+        }
+
+        function spawnWord() {
+            if (!isGameRunning) return;
+
+            const word = getRandomWord();
+            const wordElement = document.createElement('div');
+            wordElement.classList.add('falling-word');
+            wordElement.textContent = word;
+
+            const maxLeft = gameContainer.clientWidth - 150; // Adjust for word width
+            wordElement.style.left = `${Math.random() * maxLeft}px`;
+            wordElement.style.top = `0px`;
+
+            activeWords.push({
+                text: word,
+                element: wordElement,
+                y: 0
+            });
+
+            gameContainer.appendChild(wordElement);
+        }
+
+        function gameLoop() {
+            if (!isGameRunning) return;
+
+            activeWords.forEach((word, index) => {
+                word.y += fallSpeed;
+                word.element.style.top = `${word.y}px`;
+
+                // Check if word hits the bottom
+                if (word.y > gameContainer.clientHeight) {
+                    lives--;
+                    livesDisplay.textContent = lives;
+                    word.element.remove();
+                    activeWords.splice(index, 1);
+
+                    if (lives <= 0) {
+                        endGame();
+                    }
+                }
+            });
+        }
+
+        function handleInput(e) {
+            if (e.key === 'Enter') {
+                const typedWord = typingInput.value.trim();
+                if (typedWord === '') return;
+
+                const wordIndex = activeWords.findIndex(word => word.text === typedWord);
+
+                if (wordIndex !== -1) {
+                    const word = activeWords[wordIndex];
+                    score += word.text.length; // Score based on word length
+                    scoreDisplay.textContent = score;
+                    word.element.remove();
+                    activeWords.splice(wordIndex, 1);
+                }
+
+                typingInput.value = '';
+            }
+        }
+
+        function startGame() {
+            // Reset game state
+            score = 0;
+            lives = 5;
+            fallSpeed = 1;
+            activeWords.forEach(word => word.element.remove());
+            activeWords = [];
+            scoreDisplay.textContent = score;
+            livesDisplay.textContent = lives;
+            isGameRunning = true;
+
+            // Update UI
+            gameOverlay.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            typingInput.disabled = false;
+            typingInput.focus();
+
+            // Start game loops
+            gameInterval = setInterval(gameLoop, 1000 / 60); // 60 FPS
+            spawnInterval = setInterval(() => {
+                spawnWord();
+                // Increase difficulty over time
+                if (score > 50 && score % 50 === 0) {
+                    fallSpeed += 0.2;
+                }
+            }, 1500); // Spawn a new word every 1.5 seconds
+        }
+
+        function endGame() {
+            isGameRunning = false;
+            clearInterval(gameInterval);
+            clearInterval(spawnInterval);
+            typingInput.disabled = true;
+            finalScore.textContent = score;
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        typingInput.addEventListener('keydown', handleInput);
+    </script>
+</body>
+</html>
